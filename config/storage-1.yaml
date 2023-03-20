@@ -1,38 +1,20 @@
 Name: Storage
 ListenOn: 0.0.0.0:9002
-
+Dev: true
 
 ServiceType: "storage"
 
-Mode: dev
+Group : "Local-1"
+
+DriverName: "Local"
+DriverAddtion:
+  RootPath : ./storage-1
+
+FileSizeLimit: 1024000
+
+Trackers:
+  - http://127.0.0.1:8001
 
 Log:
-  ServiceName: storage-rpc
-  Level: debug
-  Encoding: plain
-
-Storages :
-  - AliyundriveOpen:
-      authTokenURL : djsakl1321
-  - 115Driver:
-      QRCodeToken: djsklajd1312
-
-LevelDb:
-  storeRoot: ./data
-
-DriverConfig :
-  TimeOut: 10000
-  HeartBeat: 60000
-
-
-Etcd:
-  Hosts:
-  - etcd:2379
-  Key: storage.rpc
-
-TrackerRpc:
-  ListenOn: localhost:8001
-  Etcd:
-    Hosts:
-    - localhost:2379
-    Key: tacker.rpc
+  ServiceName: storage-local
+  OutPath: ./logs/storage-1.log
