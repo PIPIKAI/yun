@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package="./pb";
+// The greeting service definition.
+service Storage {
+  // Sends a greeting
+  rpc HeartBeat (HeartBeatRequest) returns (HeartBeatReply) {}
+  rpc Upload (UploadRequest) returns (UploadReply) {}
+  rpc Manage (ManageRequest) returns (ManageReply) {}
+}
+
+// The request message containing the user's name.
+message HeartBeatRequest {
+}
+
+// The response message containing the greetings
+message HeartBeatReply {
+  map<string,string> status = 1;
+}
+
+
+message File {
+    string fileName =1;
+    int64 size = 2;
+    bytes content =3;
+
+}
+message UploadRequest{
+    File file =1;
+}
+
+message UploadReply{
+    string url  = 1;
+    string token =2;
+}
+
+message ManageRequest{
+    string method = 1;
+    string token = 2;
+    map<string,string> args =3; 
+}
+
+message ManageReply{
+
+}
