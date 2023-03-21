@@ -1,0 +1,43 @@
+package models
+
+import (
+	"time"
+)
+
+type Storage struct {
+	Group      string
+	ServerAddr string
+	Status     string
+	Cap        int64
+	UpdataTime int64
+}
+
+func (s Storage) GetClientKey() string {
+	return s.Group + s.ServerAddr
+}
+
+type Group struct {
+	Name     string
+	Cap      int64
+	Status   string
+	Storages map[string]Storage
+}
+
+func (g Group) GetValidStorages() (storages []Storage) {
+
+	for _, v := range g.Storages {
+		if v.Status == "work" {
+			storages = append(storages, v)
+		}
+	}
+	return
+}
+func (g Group) GetLongLivedStorage() (storage Storage) {
+	storage.UpdataTime = time.Now().Unix()
+	for _, v := range g.Storages {
+		if v.UpdataTime < storage.UpdataTime && v.Status == "work" {
+			storage = v
+		}
+	}
+	return
+}
