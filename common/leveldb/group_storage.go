@@ -3,6 +3,7 @@ package leveldb
 import (
 	"encoding/json"
 
+	"github.com/pipikai/yun/common/logger"
 	"github.com/pipikai/yun/models"
 )
 
@@ -43,6 +44,7 @@ func (ldb *LevelDb) UpdateGroup(g models.Storage) error {
 	if err != nil {
 		return nil
 	}
+	logger.Logger.Info(string(ldbData))
 	ldb.Do(g.Group, ldbData)
 	return nil
 }

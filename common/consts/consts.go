@@ -4,6 +4,6 @@ import "time"
 
 var (
 	TimeOut        = time.Second * 30
-	FreshSchedule  = "*/6000 * * * * *"
+	FreshSchedule  = "*/10 * * * * *"
 	ReportSchedule = "*/5 * * * * *"
 )

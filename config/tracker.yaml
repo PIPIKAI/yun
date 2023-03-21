@@ -1,13 +1,9 @@
 Name: Storage
-ListenOn: 0.0.0.0:8001
+ListenOn: 127.0.0.1:8001
 Mode: dev
 ServiceType: "tracker"
 
 TempDir: ./temp
-Log:
-  ServiceName: storage-rpc
-  Level: debug
-  Encoding: plain
 
 LevelDb:
   storeRoot: ./LevelDbdata
