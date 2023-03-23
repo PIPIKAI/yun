@@ -28,10 +28,9 @@ func (s *storage) ReportStatus() {
 	data.Status = s.status
 	data.Driver = s.Config.DriverName
 
-	logger.Logger.Info(data)
 	for _, ip := range s.Config.Trackers {
-		if res, err := util.PostJSON(ip+"/report-status", data, nil, consts.TimeOut); err != nil {
-			logger.Logger.Errorf("Report Err :%s \n err : %v", string(res), err)
+		if _, err := util.PostJSON(ip+"/report-status", data, nil, consts.TimeOut); err != nil {
+			logger.Logger.Warnf("Report Err :%s ", string(ip))
 		}
 	}
 

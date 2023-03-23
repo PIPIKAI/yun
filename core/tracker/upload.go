@@ -2,6 +2,7 @@ package tracker
 
 import (
 	"context"
+	"io"
 	"os"
 	"strconv"
 	"time"
@@ -56,11 +57,38 @@ func (t *tracker) Upload(c *gin.Context) {
 		Content:  content,
 	}
 
-	// Todo : change to stream rpc req
 	res, err := t.Dial(storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
-		return client.Upload(context.Background(), &pb.UploadRequest{
-			File: pbFile,
-		})
+		// client send
+		mf, err := f.Open()
+		if err != nil {
+			return nil, err
+		}
+		defer mf.Close()
+		stream, err := client.Upload(context.Background())
+		if err != nil {
+			return nil, err
+		}
+		for {
+			read := make([]byte, 1<<16)
+			n, err := mf.Read(read[:])
+			if err != nil {
+				if err == io.EOF {
+					return stream.CloseAndRecv()
+				}
+				return nil, err
+			}
+			err = stream.Send(&pb.UploadRequest{
+				File: &pb.File{
+					FileName: f.Filename,
+					Size:     f.Size,
+					Content:  read[:n],
+				},
+			})
+			if err != nil {
+				return nil, err
+			}
+		}
+
 	})
 	if err != nil {
 		util.Response.Error(c, nil, err.Error())

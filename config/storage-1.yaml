@@ -1,5 +1,5 @@
 Name: Storage
-ListenOn: 127.0.0.1:9002
+ListenOn: 127.0.0.1:9001
 Dev: true
 
 ServiceType: "storage"

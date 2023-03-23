@@ -7,7 +7,7 @@ option go_package="./pb";
 service Storage {
   // Sends a greeting
   rpc HeartBeat (HeartBeatRequest) returns (HeartBeatReply) {}
-  rpc Upload (UploadRequest) returns (UploadReply) {}
+  rpc Upload (stream UploadRequest) returns (UploadReply) {}
   rpc Manage (ManageRequest) returns (ManageReply) {}
 }
 

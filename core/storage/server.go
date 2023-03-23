@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"log"
 
 	"github.com/pipikai/yun/common/logger"
@@ -40,20 +41,45 @@ func (s *Server) HeartBeat(ctx context.Context, in *pb.HeartBeatRequest) (reply 
 	// s.Driver.Link()
 	return
 }
-func (s *Server) Upload(ctx context.Context, in *pb.UploadRequest) (reply *pb.UploadReply, err error) {
-	link, err := s.Driver.Upload(ctx, vo.StreamFile{
-		Name:    in.File.FileName,
-		Size:    in.File.Size,
-		Content: in.File.Content,
-	})
-	if err != nil {
-		return nil, err
+func (s *Server) Upload(uploadServer pb.Storage_UploadServer) (err error) {
+	// recide
+	streamFile := vo.StreamFile{Content: make([]byte, 0)}
+	for {
+		req, err := uploadServer.Recv()
+		if err != nil {
+			if err == io.EOF { // 流结束会返回EOF错误
+				link, err := s.Driver.Upload(context.Background(), streamFile)
+				if err != nil {
+					return err
+				}
+				err = uploadServer.SendAndClose(&pb.UploadReply{
+					Url: link.GetPath(),
+				})
+				if err != nil {
+					return err
+				}
+				return nil
+			}
+			return err
+		}
+		streamFile.Name = req.File.FileName
+		streamFile.Size = req.File.Size
+		streamFile.Content = append(streamFile.Content, req.File.Content...)
 	}
-	logger.Logger.Info(link.GetPath())
-	return &pb.UploadReply{
-		Url:   link.GetPath(),
-		Token: in.File.FileName,
-	}, nil
+	// uploadServer.
+	// link, err := s.Driver.Upload(context.Background(), vo.StreamFile{
+	// 	Name:    in.File.FileName,
+	// 	Size:    in.File.Size,
+	// 	Content: in.File.Content,
+	// })
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// logger.Logger.Info(link.GetPath())
+	// return &pb.UploadReply{
+	// 	Url:   link.GetPath(),
+	// 	Token: in.File.FileName,
+	// }, nil
 }
 func (s *Server) Manage(ctx context.Context, in *pb.ManageRequest) (reply *pb.ManageReply, err error) {
 
