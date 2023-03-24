@@ -17,9 +17,12 @@ func (t tracker) FreshStorage() {
 	}
 	logger.Logger.Info("FreshStorage")
 	groups, _ := ldb.GetAllGroups()
-	for _, group := range groups {
+	for i, group := range groups {
+		all_worked := true
+
 		for k, v := range group.Storages {
 			if time.Now().Unix()-v.UpdataTime > 60 && v.Status == "work" {
+				all_worked = false
 				// groups[i].Storages[k].Status =
 				Storage := models.Storage{
 					Group:      v.Group,
@@ -29,12 +32,25 @@ func (t tracker) FreshStorage() {
 					UpdataTime: v.UpdataTime,
 				}
 				logger.Logger.Warnf("storage %s Expired", k)
-				if err := ldb.UpdateGroup(Storage); err != nil {
+				if err := ldb.UpdateStorage(Storage); err != nil {
 					logger.Logger.Error(err)
+					return
 				}
-
+			}
+			if v.Status != "work" {
+				all_worked = false
 			}
 		}
+		if !all_worked {
+			groups[i].Status = "died"
+
+			err := ldb.UpdateGroup(groups[i])
+			if err != nil {
+				logger.Logger.Error(err)
+				return
+			}
+		}
+
 	}
 
 }

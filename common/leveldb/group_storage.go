@@ -7,7 +7,17 @@ import (
 	"github.com/pipikai/yun/models"
 )
 
-func (ldb *LevelDb) UpdateGroup(g models.Storage) error {
+func (ldb *LevelDb) UpdateGroup(g models.Group) error {
+
+	ldbData, err := json.Marshal(g)
+	if err != nil {
+		return err
+	}
+	ldb.Do(g.Name, ldbData)
+	return nil
+
+}
+func (ldb *LevelDb) UpdateStorage(g models.Storage) error {
 	group, _ := ldb.Do(g.Group)
 
 	if group == nil {
@@ -33,6 +43,9 @@ func (ldb *LevelDb) UpdateGroup(g models.Storage) error {
 	nowCap := g.Cap
 
 	for _, v := range nowGroup.Storages {
+		if v.Status == "work" {
+			nowGroup.Status = "work"
+		}
 		if nowCap > v.Cap {
 			nowCap = v.Cap
 		}
@@ -42,7 +55,7 @@ func (ldb *LevelDb) UpdateGroup(g models.Storage) error {
 
 	ldbData, err := json.Marshal(nowGroup)
 	if err != nil {
-		return nil
+		return err
 	}
 	logger.Logger.Info(string(ldbData))
 	ldb.Do(g.Group, ldbData)

@@ -15,7 +15,7 @@ func Run() {
 		config: config.NewTrackerConfig(),
 	}
 
-	schedule.StartCronTask(consts.FreshSchedule, tracker.FreshStorage)
+	schedule.StartCronTask(consts.TrackerFreshSchedule, tracker.FreshStorage)
 
 	tracker.Server()
 }

@@ -37,7 +37,7 @@ func (t *tracker) SelectMaxCapGroup() (*models.Group, error) {
 		return nil, err
 	}
 	for _, v := range groups {
-		if res.Cap <= v.Cap {
+		if res.Cap <= v.Cap && v.Status == "work" {
 			res = v
 		}
 	}

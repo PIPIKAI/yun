@@ -19,7 +19,12 @@ type storage struct {
 }
 
 func (s *storage) FreshDriver() {
-	logger.Logger.Info("FreshDriver")
+
+	err := s.Grpc.InitDriver(&s.Config)
+	if err != nil {
+		s.status = err.Error()
+	}
+	logger.Logger.Info("FreshDriver status:", s.status)
 }
 func Run() {
 	config := *config.NewStorageConfig()
@@ -40,7 +45,7 @@ func Run() {
 	}
 	s.status = "work"
 	schedule.StartCronTask(consts.ReportSchedule, s.ReportStatus)
-	schedule.StartCronTask(consts.FreshSchedule, s.FreshDriver)
+	// schedule.StartCronTask(consts.StorageFreshSchedule, s.FreshDriver)
 	go s.Grpc.RpcServer(m)
 	go s.StartHTTP(m)
 

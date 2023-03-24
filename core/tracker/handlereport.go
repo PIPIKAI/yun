@@ -29,7 +29,7 @@ func (t *tracker) HanldeStorageServerReport(c *gin.Context) {
 		return
 	}
 
-	err = ldb.UpdateGroup(nowStorage)
+	err = ldb.UpdateStorage(nowStorage)
 	if err != nil {
 		logger.Logger.Errorf("Db  Update Grop err: %v", err)
 	}
