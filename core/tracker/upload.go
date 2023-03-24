@@ -3,7 +3,6 @@ package tracker
 import (
 	"context"
 	"io"
-	"os"
 	"strconv"
 	"time"
 
@@ -13,7 +12,6 @@ import (
 	"github.com/pipikai/yun/common/logger"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/pb"
-	"github.com/spf13/viper"
 )
 
 func (t *tracker) Upload(c *gin.Context) {
@@ -32,31 +30,32 @@ func (t *tracker) Upload(c *gin.Context) {
 	}
 
 	f, _ := c.FormFile("file")
-	tempFile := viper.GetString("TempDir") + "/_tmp/" + f.Filename
-	defer os.Remove(tempFile)
+	// tempFile := viper.GetString("TempDir") + "/_tmp/" + f.Filename
+	// defer os.Remove(tempFile)
 
 	if storage.Cap != 0 && storage.Cap < f.Size {
 		util.Response.Error(c, nil, "rest cap is less than free ")
 		return
 	}
 
-	if err := c.SaveUploadedFile(f, tempFile); err != nil {
-		util.Response.Error(c, nil, err.Error())
-		return
-	}
+	// if err := c.SaveUploadedFile(f, tempFile); err != nil {
+	// 	util.Response.Error(c, nil, err.Error())
+	// 	return
+	// }
 
-	content, err := os.ReadFile(tempFile)
-	if err != nil {
-		util.Response.Error(c, nil, err.Error())
-		return
-	}
+	// content, err := os.ReadFile(tempFile)
+	// if err != nil {
+	// 	util.Response.Error(c, nil, err.Error())
+	// 	return
+	// }
 
+	logger.Logger.Infof("tracker get Size: %v ", f.Size)
 	pbFile := &pb.File{
 		FileName: f.Filename,
 		Size:     f.Size,
-		Content:  content,
+		// Content:  content,
 	}
-
+	// logger.Logger.Debugf("FIle in Sizes:%v", len(content))
 	res, err := t.Dial(storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
 		// client send
 		mf, err := f.Open()
@@ -101,9 +100,10 @@ func (t *tracker) Upload(c *gin.Context) {
 		return
 	}
 	logger.Logger.Info(res)
-	url := res.(*pb.UploadReply)
+	link_byte := res.(*pb.UploadReply).Link
 	token := strconv.Itoa(int(time.Now().Unix() + pbFile.Size))
-	ldb.Do(token, []byte(url.Url))
+
+	ldb.Do(token, link_byte)
 	if err != nil {
 		util.Response.Error(c, nil, err.Error())
 		return

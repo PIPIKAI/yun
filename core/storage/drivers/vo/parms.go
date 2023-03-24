@@ -5,6 +5,7 @@ import (
 )
 
 type IDir interface {
+	GetID() string
 	GetSize() int64
 	GetName() string
 	ModTime() time.Time

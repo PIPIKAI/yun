@@ -1,0 +1,32 @@
+Name: Storage
+ListenOn: 127.0.0.1:9002
+Dev: true
+
+ServiceType: "storage"
+
+Group : "Local-2"
+
+DriverName: "BaiduNetdisk"
+DriverAddtion:
+  RootPath : /yun
+  RefreshToken : 122.2510b1288cbc493f44b13463aefe5ed5.YH14RNzPVNq0POI-ructuzNP3XbXzPdWpRLaNKO.6g_8Pw
+  ClientID : iYCeC9g08h5vuP9UqvPHKKSVrKFXGa1v
+  ClientSecret : jXiFMOPVPCWlO2M5CwWQzffpNPaGTRBG
+
+FileSizeLimit: 1024000
+
+Trackers:
+  - http://127.0.0.1:8001
+
+Log:
+  ServiceName: storage-local
+  OutPath: ./logs/storage-1.log
+
+
+# client_id: iYCeC9g08h5vuP9UqvPHKKSVrKFXGa1v
+
+# client_secret: jXiFMOPVPCWlO2M5CwWQzffpNPaGTRBG
+
+# redirect_uri: https://alist.nn.ci/tool/baidu/callback
+
+# refresh_token: 122.64bcd9b47a6a46bc8370f7b7692ae287.YsLuxPadSaMuMxdKWiRXZPzV24NlqyP61nnB57Y.8Gz0Ug

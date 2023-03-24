@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/pipikai/yun/common/logger"
+	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/storage/config"
 	"github.com/pipikai/yun/core/storage/drivers"
 	"github.com/pipikai/yun/core/storage/drivers/vo"
@@ -22,6 +23,9 @@ type Server struct {
 
 func (s *Server) InitDriver(config *config.StorageConfig) error {
 	dr := drivers.GetDriver(config.DriverName)
+	if dr == nil {
+		logger.Logger.DPanicf("Driver %s Not Found", config.DriverName)
+	}
 	addtion, err := json.Marshal(config.DriverAddtion)
 	if err != nil {
 		return err
@@ -30,8 +34,12 @@ func (s *Server) InitDriver(config *config.StorageConfig) error {
 	if err != nil {
 		return err
 	}
+
+	logger.Logger.Infof("driver :%s  \nAddtion: %v", config.DriverName, dr.GetAddition())
 	err = dr.Init(context.Background())
 	if err != nil {
+		logger.Logger.Error("driver :%s init err: %v", config.DriverName, err)
+
 		return err
 	}
 	s.Driver = dr
@@ -48,12 +56,19 @@ func (s *Server) Upload(uploadServer pb.Storage_UploadServer) (err error) {
 		req, err := uploadServer.Recv()
 		if err != nil {
 			if err == io.EOF { // 流结束会返回EOF错误
+				logger.Logger.Debugf("rpc get size %v", len(streamFile.Content))
+
 				link, err := s.Driver.Upload(context.Background(), streamFile)
+
+				if err != nil {
+					return err
+				}
+				link_bytes, err := util.Json.Marshal(link)
 				if err != nil {
 					return err
 				}
 				err = uploadServer.SendAndClose(&pb.UploadReply{
-					Url: link.GetPath(),
+					Link: link_bytes,
 				})
 				if err != nil {
 					return err
@@ -66,20 +81,7 @@ func (s *Server) Upload(uploadServer pb.Storage_UploadServer) (err error) {
 		streamFile.Size = req.File.Size
 		streamFile.Content = append(streamFile.Content, req.File.Content...)
 	}
-	// uploadServer.
-	// link, err := s.Driver.Upload(context.Background(), vo.StreamFile{
-	// 	Name:    in.File.FileName,
-	// 	Size:    in.File.Size,
-	// 	Content: in.File.Content,
-	// })
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// logger.Logger.Info(link.GetPath())
-	// return &pb.UploadReply{
-	// 	Url:   link.GetPath(),
-	// 	Token: in.File.FileName,
-	// }, nil
+
 }
 func (s *Server) Manage(ctx context.Context, in *pb.ManageRequest) (reply *pb.ManageReply, err error) {
 

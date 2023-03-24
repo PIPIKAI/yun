@@ -55,7 +55,8 @@ func (d *Local) Upload(ctx context.Context, file vo.IStreamFile) (vo.ILink, erro
 		return nil, err
 	}
 	return vo.Link{
-		Path: path + util.GetUnixString() + "-" + file.GetName(),
+		Scheme: "http",
+		Path:   path + util.GetUnixString() + "-" + file.GetName(),
 	}, nil
 }
 func (d *Local) Link(ctx context.Context, dir vo.IDir) (vo.ILink, error) {

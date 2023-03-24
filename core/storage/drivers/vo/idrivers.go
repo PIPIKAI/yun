@@ -1,9 +1,13 @@
 package vo
 
-import "context"
+import (
+	"context"
+	"net/http"
+)
 
 type ILink interface {
 	GetPath() string
+	GetHeader() http.Header
 }
 
 type Driver interface {

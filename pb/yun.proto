@@ -30,10 +30,11 @@ message File {
 message UploadRequest{
     File file =1;
 }
-
+message Strings{
+  repeated string strs = 1;
+}
 message UploadReply{
-    string url  = 1;
-    string token =2;
+    bytes link= 1;
 }
 
 message ManageRequest{

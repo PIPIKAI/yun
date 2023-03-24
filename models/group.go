@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"github.com/pipikai/yun/common/logger"
 )
 
 type Storage struct {
@@ -25,6 +27,7 @@ type Group struct {
 
 func (g Group) GetValidStorages() (storages []Storage) {
 
+	logger.Logger.Info(g.Storages)
 	for _, v := range g.Storages {
 		if v.Status == "work" {
 			storages = append(storages, v)

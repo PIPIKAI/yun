@@ -13,4 +13,5 @@ var (
 	UploadNotSupported     = errors.New("upload not supported")
 
 	MetaNotFound = errors.New("meta not found")
+	EmptyToken   = errors.New("empty token")
 )
