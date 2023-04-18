@@ -7,7 +7,9 @@ option go_package="./pb";
 service Storage {
   // Sends a greeting
   rpc HeartBeat (HeartBeatRequest) returns (HeartBeatReply) {}
-  rpc Upload (stream UploadRequest) returns (UploadReply) {}
+  rpc PreUpload (PreUploadRequest) returns (PreUploadReply) {}
+  rpc Upload (UploadRequest) returns (UploadReply) {}
+  rpc Merge (MergeRequest) returns (MergeReply) {}
   rpc Manage (ManageRequest) returns (ManageReply) {}
 }
 
@@ -28,13 +30,36 @@ message File {
 
 }
 message UploadRequest{
-    File file =1;
+    string sessionId = 1;
+    int64 blockId = 2;
+    bytes rawData = 3;
+}
+
+message PreUploadRequest{
+  string sessionId=1;
+  string md5 = 2;
+  repeated string blockMd5=3;
+}
+
+message PreUploadReply{
+  int32 code = 1;
+  repeated bool blockstatus= 2;
+}
+message MergeRequest{
+    string sessionId = 1;
+    int64 size = 2;
+    int64 blockSize = 3;
+}
+
+message MergeReply {
+  string md5 = 1;
 }
 message Strings{
   repeated string strs = 1;
 }
 message UploadReply{
-    bytes link= 1;
+  string md5 = 1;
+    // bytes link= 1;
 }
 
 message ManageRequest{
