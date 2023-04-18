@@ -23,10 +23,12 @@ type UploadSession struct {
 	Storage     Storage
 	CreatedTime time.Time
 	// uploading done failed stoped
-	Status   string
-	Percent  float32
-	FileName string
-	Size     int64
+	BlockSize int64
+	BlockMD5  []string
+	Status    string
+	Percent   float32
+	FileName  string
+	Size      int64
 }
 
 func (u *UploadSession) GetStatus() string {

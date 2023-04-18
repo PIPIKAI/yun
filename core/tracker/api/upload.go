@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pipikai/yun/common/leveldb"
@@ -19,7 +18,7 @@ import (
 func Upload(c *gin.Context) {
 	type Req struct {
 		SessionID string `json:"session_id"`
-		BlockSeq  int    `json:"block_seq"`
+		BlockSeq  int64  `json:"block_seq"`
 		RawData   []byte `json:"raw_data"`
 	}
 	var req Req
@@ -27,50 +26,40 @@ func Upload(c *gin.Context) {
 		util.Response.Error(c, nil, "参数错误")
 		return
 	}
-	session_db, err := leveldb.NewLDB(models.UploadSessionDB)
+
+	session, err := leveldb.GetOne[models.UploadSession](req.SessionID)
+
 	if err != nil {
-		util.Response.Error(c, nil, err.Error())
-		return
-	}
-	var session models.UploadSession
-	session_data, err := session_db.Do(req.SessionID)
-	if err != nil {
-		util.Response.Error(c, nil, err.Error())
+		util.Response.Error(c, nil, "DB Error :"+err.Error())
 		return
 	}
 
-	err = json.Unmarshal(session_data, &session)
-	if err != nil {
-		util.Response.Error(c, nil, err.Error())
+	if err := c.ShouldBind(&req); err != nil {
+		util.Response.Error(c, nil, "参数错误")
 		return
 	}
-
 	//  client.upload()
-	_, err = Dial(session.Storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
+	rpc_res, err := Dial(session.Storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
 
-		stream, err := client.Upload(context.Background())
-		if err != nil {
-			return nil, err
-		}
-
-		err = stream.Send(&pb.UploadRequest{
-			File: &pb.File{
-				Content: req.RawData,
-			},
+		return client.Upload(context.Background(), &pb.UploadRequest{
+			SessionId: req.SessionID,
+			BlockId:   req.BlockSeq,
+			RawData:   req.RawData,
 		})
-		if err != nil {
-			return nil, err
-		}
-		return nil, nil
 	})
-	//  client.upload()
+	if err != nil {
+		util.Response.Error(c, nil, err.Error())
+		return
+	}
+	res := rpc_res.(*pb.UploadReply)
 
-	// client.create()
+	session.Percent += (1.0 / float32(session.BlockSize))
 
+	err = leveldb.UpdataOne(session)
 	if err != nil {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
 	// res.
-
+	util.Response.Success(c, gin.H{"md5": res.Md5}, "success")
 }

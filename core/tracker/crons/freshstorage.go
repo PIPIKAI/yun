@@ -8,7 +8,7 @@ import (
 	"github.com/pipikai/yun/core/tracker/models"
 )
 
-var FreshStorageSpec = "*/6000 * * * * *"
+var FreshStorageSpec = "*/60 * * * * *"
 var TimeOutTime = int64(60)
 
 func UpdateStorageStatus() {

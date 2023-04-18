@@ -25,7 +25,7 @@ func SelectMaxCapGroup() (*models.Group, error) {
 	return &res, nil
 }
 
-func SelectStorage(c *gin.Context, group models.Group) (*models.Storage, error) {
+func SelectStorage(c *gin.Context, group *models.Group) (*models.Storage, error) {
 	storages := group.GetValidStorages()
 	if storages == nil {
 		return nil, errors.New("no avalid storage server")

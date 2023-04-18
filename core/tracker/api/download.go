@@ -45,7 +45,7 @@ func Download() gin.HandlerFunc {
 			util.Response.Error(c, nil, err.Error())
 			return
 		}
-		storage, err := SelectStorage(c, *group)
+		storage, err := SelectStorage(c, group)
 		if err != nil {
 			util.Response.Error(c, nil, err.Error())
 			return
