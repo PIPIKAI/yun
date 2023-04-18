@@ -4,9 +4,7 @@ import (
 	"net"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pipikai/yun/common/consts"
 	"github.com/pipikai/yun/common/logger"
-	"github.com/pipikai/yun/common/schedule"
 	"github.com/pipikai/yun/core/storage/config"
 	"github.com/soheilhy/cmux"
 )
@@ -44,7 +42,7 @@ func Run() {
 		s.status = err.Error()
 	}
 	s.status = "work"
-	schedule.StartCronTask(consts.ReportSchedule, s.ReportStatus)
+	// schedule.StartCronTask(consts.ReportSchedule, s.ReportStatus)
 	// schedule.StartCronTask(consts.StorageFreshSchedule, s.FreshDriver)
 	go s.Grpc.RpcServer(m)
 	go s.StartHTTP(m)

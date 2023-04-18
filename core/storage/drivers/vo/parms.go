@@ -9,8 +9,6 @@ type IDir interface {
 	GetSize() int64
 	GetName() string
 	ModTime() time.Time
-	IsDir() bool
-	GetPath() string
 }
 
 type IStreamFile interface {

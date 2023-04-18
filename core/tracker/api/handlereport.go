@@ -1,16 +1,15 @@
-package tracker
+package api
 
 import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pipikai/yun/common/consts"
 	"github.com/pipikai/yun/common/leveldb"
 	"github.com/pipikai/yun/common/logger"
-	"github.com/pipikai/yun/models"
+	"github.com/pipikai/yun/core/tracker/models"
 )
 
-func (t *tracker) HanldeStorageServerReport(c *gin.Context) {
+func HanldeStorageServerReport(c *gin.Context) {
 	var req models.ServerReport
 	c.ShouldBind(&req)
 
@@ -22,14 +21,13 @@ func (t *tracker) HanldeStorageServerReport(c *gin.Context) {
 		UpdataTime: time.Now().Unix(),
 	}
 
-	// 更新数据库
-	ldb, err := leveldb.NewLDB(consts.Group_Storage_DB)
+	group, err := leveldb.GetOne[models.Group](req.Group)
 	if err != nil {
-		logger.Logger.Errorf("Db  connect: %v", err)
+		logger.Logger.Errorf("Db  GetOne err: %v", err)
 		return
 	}
-
-	err = ldb.UpdateStorage(nowStorage)
+	group.Storages[nowStorage.GetClientKey()] = nowStorage
+	err = leveldb.UpdataOne(*group)
 	if err != nil {
 		logger.Logger.Errorf("Db  Update Grop err: %v", err)
 	}

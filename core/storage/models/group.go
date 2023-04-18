@@ -6,6 +6,8 @@ import (
 	"github.com/pipikai/yun/common/logger"
 )
 
+var GroupDB = "Group"
+
 type Storage struct {
 	Group      string
 	ServerAddr string

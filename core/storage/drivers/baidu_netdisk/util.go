@@ -13,6 +13,7 @@ import (
 	"github.com/pipikai/yun/common/logger"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/storage/drivers/vo"
+	"github.com/pipikai/yun/core/storage/models"
 )
 
 // do others that not defined in Driver interface
@@ -121,7 +122,7 @@ func (d *BaiduNetdisk) post(pathname string, params map[string]string, data inte
 // 	return res, nil
 // }
 
-func (d *BaiduNetdisk) linkOfficial(file vo.IDir) (vo.ILink, error) {
+func (d *BaiduNetdisk) linkOfficial(file vo.IDir) (*models.Link, error) {
 	var resp DownloadResp
 	params := map[string]string{
 		"method": "filemetas",
@@ -144,7 +145,7 @@ func (d *BaiduNetdisk) linkOfficial(file vo.IDir) (vo.ILink, error) {
 	//}
 	logger.Logger.Debug(res)
 
-	return vo.Link{
+	return &models.Link{
 		Scheme: "https",
 		Path:   u,
 		Header: http.Header{

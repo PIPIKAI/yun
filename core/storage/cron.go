@@ -5,7 +5,7 @@ import (
 	"github.com/pipikai/yun/common/logger"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/storage/drivers/vo"
-	"github.com/pipikai/yun/models"
+	"github.com/pipikai/yun/core/storage/models"
 	"github.com/spf13/viper"
 )
 

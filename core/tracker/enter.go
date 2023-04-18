@@ -1,27 +1,12 @@
 package tracker
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/pipikai/yun/common/consts"
-	"github.com/pipikai/yun/common/schedule"
-	"github.com/pipikai/yun/core/tracker/config"
+	"github.com/pipikai/yun/core/tracker/svc"
 )
 
 func Run() {
 
-	tracker := &tracker{
-		Svc:    NewSvc(),
-		g:      gin.Default(),
-		config: config.NewTrackerConfig(),
-	}
-
-	schedule.StartCronTask(consts.TrackerFreshSchedule, tracker.FreshStorage)
+	tracker := svc.NewSvc()
 
 	tracker.Server()
-}
-
-type tracker struct {
-	Svc    *svc
-	g      *gin.Engine
-	config *config.TrackerConfig
 }

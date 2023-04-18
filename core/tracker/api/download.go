@@ -1,4 +1,4 @@
-package tracker
+package api
 
 import (
 	"net/http"
@@ -13,9 +13,12 @@ import (
 	"github.com/pipikai/yun/common/logger"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/storage/drivers/vo"
+	"github.com/pipikai/yun/core/tracker/models"
 )
 
-func (t *tracker) Download() gin.HandlerFunc {
+// download logic
+// get group ,token -> search db -> get link -> expire ? yes -> get group , Link() -> get link  -> proxy
+func Download() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.Request.Method != "GET" {
 			c.Next()
@@ -34,21 +37,15 @@ func (t *tracker) Download() gin.HandlerFunc {
 			return
 		}
 
-		ldb, err := leveldb.NewLDB(consts.Group_Storage_DB)
-		if err != nil {
-			util.Response.Error(c, nil, err.Error())
-			return
-		}
-
 		logger.Logger.Info("g ", g)
 		logger.Logger.Info("token ", token)
 
-		group, err := ldb.GetGroup(g)
+		group, err := leveldb.GetOne[models.Group](g)
 		if err != nil {
 			util.Response.Error(c, nil, err.Error())
 			return
 		}
-		storage, err := t.SelectStorage(c, *group)
+		storage, err := SelectStorage(c, *group)
 		if err != nil {
 			util.Response.Error(c, nil, err.Error())
 			return
@@ -92,12 +89,12 @@ func (t *tracker) Download() gin.HandlerFunc {
 
 		logger.Logger.Debug(c.Request)
 		// group, err := ldb.GetGroup(g)
-		t.HTTPProxy(c, "http", storage.ServerAddr)
+		HTTPProxy(c, "http", storage.ServerAddr)
 	}
 }
 
 // HTTPProxy ,http 反向代理
-func (t *tracker) HTTPProxy(c *gin.Context, Scheme, Host string) bool {
+func HTTPProxy(c *gin.Context, Scheme, Host string) bool {
 
 	remote, err := url.Parse(Scheme + "://" + Host)
 	if err != nil {

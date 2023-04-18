@@ -14,7 +14,7 @@ import (
 	"github.com/pipikai/yun/common/logger"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/storage/drivers/vo"
-	"github.com/pipikai/yun/models"
+	"github.com/pipikai/yun/core/storage/models"
 )
 
 type BaiduNetdisk struct {
@@ -48,16 +48,16 @@ func (d *BaiduNetdisk) Init(ctx context.Context) error {
 // 	})
 // }
 
-func (d *BaiduNetdisk) Link(ctx context.Context, file vo.IDir) (vo.ILink, error) {
+func (d *BaiduNetdisk) Link(ctx context.Context, file vo.IDir) (*models.Link, error) {
 	return d.linkOfficial(file)
 }
 func (d *BaiduNetdisk) Remove(ctx context.Context, file vo.IDir) error {
-	data := []string{file.GetPath()}
-	_, err := d.manage("delete", data)
-	return err
+	// data := []string{file.GetPath()}
+	// _, err := d.manage("delete", data)
+	return nil
 }
 
-func (d *BaiduNetdisk) Upload(ctx context.Context, stream vo.IStreamFile) (vo.ILink, error) {
+func (d *BaiduNetdisk) Upload(ctx context.Context, stream vo.IStreamFile) (*models.Link, error) {
 	logger.Logger.Info(stream.GetName(), stream.GetSize(), len(stream.GetContent()))
 
 	var Default int64 = 4 * 1024 * 1024
@@ -112,10 +112,9 @@ func (d *BaiduNetdisk) Upload(ctx context.Context, stream vo.IStreamFile) (vo.IL
 		return nil, err
 	}
 	if precreateResp.ReturnType == 2 {
-		link, err := d.Link(ctx, models.DirInfo{
+		link, err := d.Link(ctx, models.FileInfo{
 			ID:   util.Json.Get(res, "info", "fs_id").ToString(),
 			Name: stream.GetName(),
-			Path: d.Addition.RootPath,
 		})
 		return link, err
 	}
@@ -171,18 +170,17 @@ func (d *BaiduNetdisk) Upload(ctx context.Context, stream vo.IStreamFile) (vo.IL
 		return nil, err
 	}
 
-	link, err := d.Link(ctx, models.DirInfo{
+	link, err := d.Link(ctx, models.FileInfo{
 		ID:   util.Json.Get(create_res, "fs_id").ToString(),
 		Name: stream.GetName(),
-		Path: d.Addition.RootPath,
 	})
 
 	return link, err
 }
 
 func (d *BaiduNetdisk) MakeDir(ctx context.Context, parentDir vo.IDir, dirName string) error {
-	_, err := d.create(path.Join(parentDir.GetPath(), dirName), 0, 1, "", "")
-	return err
+	// _, err := d.create(path.Join(parentDir.GetPath(), dirName), 0, 1, "", "")
+	return nil
 }
 
 // func (d *BaiduNetdisk) Move(ctx context.Context, srcObj, dstDir model.Obj) error {
