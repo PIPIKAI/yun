@@ -30,7 +30,7 @@ func (sm *ScheduleManage) Add(spec string, cmd func()) error {
 		ID:     id,
 		Cron:   spec,
 		Task:   cmd,
-		Status: "waiting",
+		Status: "waiting start",
 	}
 	return nil
 }

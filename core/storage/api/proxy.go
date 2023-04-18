@@ -1,4 +1,4 @@
-package storage
+package api
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 	"github.com/pipikai/yun/common/logger"
 )
 
-func (s *storage) Redirect() gin.HandlerFunc {
+func Proxy() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		matched, _ := regexp.MatchString("^/http", ctx.Request.RequestURI)
 		if !matched {
