@@ -36,6 +36,7 @@ func UpdateStorageStatus() {
 		}
 		if !worked {
 			group.Status = "died"
+			changes = true
 		}
 		if changes {
 			err := leveldb.UpdataOne(group)

@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pipikai/yun/common/leveldb"
+	common_models "github.com/pipikai/yun/common/models"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/tracker/models"
 	"github.com/pipikai/yun/pb"
@@ -54,8 +55,8 @@ func Merge(c *gin.Context) {
 		return
 	}
 	res := rpc_res.(*pb.MergeReply)
-	fileinfo := models.FileInfo{
-		FileMeta: models.FileMeta{
+	fileinfo := common_models.FileInfo{
+		FileMeta: common_models.FileMeta{
 			Size:        session.Size,
 			Format:      path.Ext(session.FileName),
 			Name:        session.FileName,

@@ -19,16 +19,16 @@ type Block struct {
 }
 
 type UploadSession struct {
-	ID          string
-	Storage     Storage
-	CreatedTime time.Time
+	ID          string    `json:"id"`
+	Storage     Storage   `json:"storage"`
+	CreatedTime time.Time `json:"cteated_time"`
 	// uploading done failed stoped
-	BlockSize int64
-	BlockMD5  []string
-	Status    string
-	Percent   float32
-	FileName  string
-	Size      int64
+	BlockSize int64    `json:"block_size"`
+	BlockMD5  []string `json:"block_md5"`
+	Status    string   `json:"status"`
+	Percent   float32  `json:"percent"`
+	FileName  string   `json:"file_name"`
+	Size      int64    `json:"size"`
 }
 
 func (u *UploadSession) GetStatus() string {

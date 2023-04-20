@@ -7,18 +7,19 @@ import (
 var FileInfoDB = "file_info_db"
 
 type FileMeta struct {
-	Size        int64
-	Format      string
-	Name        string
-	ModTime     time.Time
-	CreatedTime time.Time
-	Md5         string
+	Size        int64     `json:"size"`
+	Format      string    `json:"format"`
+	Name        string    `json:"anme"`
+	ModTime     time.Time `json:"modtime"`
+	CreatedTime time.Time `json:"create_time"`
+	Md5         string    `json:"md5"`
+	Dir         bool      `json:"dir"`
 }
 
 type FileInfo struct {
 	FileMeta
-	ID      string
-	Storage string
+	ID      string `json:"id"`
+	Storage string `json:"storage"`
 }
 
 func (d FileInfo) GetDB() string {

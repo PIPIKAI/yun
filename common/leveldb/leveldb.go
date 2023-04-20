@@ -4,10 +4,11 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/spf13/viper"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
-var DBDir = "LevelDbdata"
+// var DBDir = "LevelDbdata"
 
 // LevelDBPool , leveldb pool
 var LevelDBPool sync.Map
@@ -32,7 +33,7 @@ func NewLDB(name string) (ldb *LevelDb, err error) {
 	if ok {
 		return ldb, nil
 	}
-	NewDB, err := leveldb.OpenFile(DBDir+"/"+name, nil)
+	NewDB, err := leveldb.OpenFile(viper.GetString("DBdir")+"/"+name, nil)
 	if err != nil {
 		return ldb, err
 	}

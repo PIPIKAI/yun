@@ -23,7 +23,19 @@ func HanldeStorageServerReport(c *gin.Context) {
 
 	group, err := leveldb.GetOne[models.Group](req.Group)
 	if err != nil {
-		logger.Logger.Errorf("Db  GetOne err: %v", err)
+		newGroup := models.Group{
+			Name:   req.Group,
+			Cap:    req.Cap,
+			Status: req.Status,
+			Storages: map[string]models.Storage{
+				nowStorage.GetClientKey(): nowStorage,
+			},
+		}
+		err = leveldb.UpdataOne(newGroup)
+		if err != nil {
+			logger.Logger.Errorf("Db  Update Grop err: %v", err)
+			return
+		}
 		return
 	}
 	group.Storages[nowStorage.GetClientKey()] = nowStorage

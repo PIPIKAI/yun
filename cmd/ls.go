@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/pipikai/yun/common/leveldb"
-	"github.com/pipikai/yun/core/tracker/models"
+	"github.com/pipikai/yun/common/models"
 	"github.com/spf13/cobra"
 )
 

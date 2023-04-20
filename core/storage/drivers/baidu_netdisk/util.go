@@ -11,9 +11,9 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/pipikai/yun/common/errs"
 	"github.com/pipikai/yun/common/logger"
+	"github.com/pipikai/yun/common/models"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/storage/drivers/vo"
-	"github.com/pipikai/yun/core/storage/models"
 )
 
 // do others that not defined in Driver interface

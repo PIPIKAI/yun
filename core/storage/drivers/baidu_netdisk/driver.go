@@ -12,9 +12,9 @@ import (
 
 	"github.com/alist-org/alist/v3/pkg/utils"
 	"github.com/pipikai/yun/common/logger"
+	"github.com/pipikai/yun/common/models"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/storage/drivers/vo"
-	"github.com/pipikai/yun/core/storage/models"
 )
 
 type BaiduNetdisk struct {
@@ -113,8 +113,10 @@ func (d *BaiduNetdisk) Upload(ctx context.Context, stream vo.IStreamFile) (*mode
 	}
 	if precreateResp.ReturnType == 2 {
 		link, err := d.Link(ctx, models.FileInfo{
-			ID:   util.Json.Get(res, "info", "fs_id").ToString(),
-			Name: stream.GetName(),
+			FileMeta: models.FileMeta{
+				Name: stream.GetName(),
+			},
+			ID: util.Json.Get(res, "info", "fs_id").ToString(),
 		})
 		return link, err
 	}
@@ -171,8 +173,10 @@ func (d *BaiduNetdisk) Upload(ctx context.Context, stream vo.IStreamFile) (*mode
 	}
 
 	link, err := d.Link(ctx, models.FileInfo{
-		ID:   util.Json.Get(create_res, "fs_id").ToString(),
-		Name: stream.GetName(),
+		ID: util.Json.Get(create_res, "fs_id").ToString(),
+		FileMeta: models.FileMeta{
+			Name: stream.GetName(),
+		},
 	})
 
 	return link, err

@@ -10,6 +10,7 @@ DriverName: "Local"
 DriverAddtion:
   RootPath : ./storage-1
 
+DBdir : LevelDbdata-storage1
 FileSizeLimit: 1024000
 
 Trackers:

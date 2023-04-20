@@ -6,7 +6,6 @@ import (
 )
 
 func Router(g *gin.Engine) *gin.Engine {
-
 	g.Use(api.Download())
 	g.POST("/beforupload", api.BeforeUpload)
 	g.POST("/upload", api.Upload)
