@@ -1,6 +1,9 @@
 Name: Storage
-ListenOn: 127.0.0.1:9001
 Dev: true
+
+IpAddr: 192.168.1.119
+RpcPort: :9011
+HttpPort: :9001
 
 ServiceType: "storage"
 
@@ -11,10 +14,10 @@ DriverAddtion:
   RootPath : ./storage-1
 
 DBdir : LevelDbdata-storage1
-FileSizeLimit: 1024000
+FileSizeLimit: 10240000
 
 Trackers:
-  - http://127.0.0.1:8001
+  - http://192.168.1.119:8001
 
 Log:
   ServiceName: storage-local

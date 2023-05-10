@@ -113,10 +113,9 @@ func (d *BaiduNetdisk) Upload(ctx context.Context, stream vo.IStreamFile) (*mode
 	}
 	if precreateResp.ReturnType == 2 {
 		link, err := d.Link(ctx, models.FileInfo{
-			FileMeta: models.FileMeta{
-				Name: stream.GetName(),
-			},
-			ID: util.Json.Get(res, "info", "fs_id").ToString(),
+			FileMeta: models.FileMeta{},
+			ID:       util.Json.Get(res, "info", "fs_id").ToString(),
+			Name:     stream.GetName(),
 		})
 		return link, err
 	}
@@ -173,10 +172,9 @@ func (d *BaiduNetdisk) Upload(ctx context.Context, stream vo.IStreamFile) (*mode
 	}
 
 	link, err := d.Link(ctx, models.FileInfo{
-		ID: util.Json.Get(create_res, "fs_id").ToString(),
-		FileMeta: models.FileMeta{
-			Name: stream.GetName(),
-		},
+		ID:       util.Json.Get(create_res, "fs_id").ToString(),
+		FileMeta: models.FileMeta{},
+		Name:     stream.GetName(),
 	})
 
 	return link, err

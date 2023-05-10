@@ -2,12 +2,9 @@ package api
 
 import (
 	"context"
-	"path"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pipikai/yun/common/leveldb"
-	common_models "github.com/pipikai/yun/common/models"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/tracker/models"
 	"github.com/pipikai/yun/pb"
@@ -33,12 +30,17 @@ func Merge(c *gin.Context) {
 		util.Response.Error(c, nil, "DB Error :"+err.Error())
 		return
 	}
+	fileinfo, err := leveldb.GetOne[models.File](session.FileID)
+	if err != nil {
+		util.Response.Error(c, nil, "DB Error :"+err.Error())
+		return
+	}
+
 	//  client.upload()
-	rpc_res, err := Dial(session.Storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
+	rpc_res, err := Dial(fileinfo.Storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
 
 		return client.Merge(context.Background(), &pb.MergeRequest{
-			SessionId: req.SessionID,
-			Size:      req.Size,
+			Md5:       fileinfo.Md5,
 			BlockSize: req.BlockSize,
 		})
 	})
@@ -49,23 +51,18 @@ func Merge(c *gin.Context) {
 	}
 
 	session.Status = "上传成功"
+	session.Percent = 100
 	err = leveldb.UpdataOne(session)
 	if err != nil {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
 	res := rpc_res.(*pb.MergeReply)
-	fileinfo := common_models.FileInfo{
-		FileMeta: common_models.FileMeta{
-			Size:        session.Size,
-			Format:      path.Ext(session.FileName),
-			Name:        session.FileName,
-			CreatedTime: time.Now(),
-			Md5:         res.Md5,
-		},
-		ID:      session.ID,
-		Storage: session.Storage.Group,
+	fileinfo.ID = fileinfo.GetID()
+	fileinfo.Link = &models.Link{
+		Path: res.Path,
 	}
+	fileinfo.Status = 1
 	err = leveldb.UpdataOne(fileinfo)
 	if err != nil {
 		util.Response.Error(c, nil, err.Error())

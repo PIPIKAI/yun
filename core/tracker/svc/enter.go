@@ -29,6 +29,7 @@ func NewSvc() *Svc {
 
 func (s *Svc) Server() {
 	s.schedules.Add(crons.FreshStorageSpec, crons.UpdateStorageStatus)
+	s.schedules.Add(crons.CheckSessionStatusSpec, crons.CheckSessionStatus)
 	s.schedules.StartAll()
 	s.g.Run(s.config.ListenOn)
 }

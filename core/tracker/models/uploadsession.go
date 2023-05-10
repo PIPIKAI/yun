@@ -1,34 +1,16 @@
 package models
 
-import (
-	"time"
-)
-
 // k : block md5 , v :
 var UploadSessionDB = "upload_session_db"
 
-var BlockDB = "block_db"
-
-// k: md5
-type Block struct {
-	Md5         string
-	CreatedTime time.Time
-	Size        int64
-	Status      string
-	Path        string
-}
-
 type UploadSession struct {
-	ID          string    `json:"id"`
-	Storage     Storage   `json:"storage"`
-	CreatedTime time.Time `json:"cteated_time"`
-	// uploading done failed stoped
-	BlockSize int64    `json:"block_size"`
-	BlockMD5  []string `json:"block_md5"`
-	Status    string   `json:"status"`
-	Percent   float32  `json:"percent"`
-	FileName  string   `json:"file_name"`
-	Size      int64    `json:"size"`
+	ID          string  `json:"id"`
+	FileID      string  `json:"file_id"`
+	CreatedTime int64   `json:"cteated_time"`
+	UpdataTime  int64   `json:"update_time"`
+	Status      string  `json:"status"`
+	Percent     float32 `json:"percent"`
+	BlockSize   int64   `json:"block_size"`
 }
 
 func (u *UploadSession) GetStatus() string {
@@ -39,4 +21,17 @@ func (d UploadSession) GetDB() string {
 }
 func (d UploadSession) GetID() string {
 	return d.ID
+}
+func (u *UploadSession) UpdataPercent(blockStatus []bool) {
+	cnt := 0
+	for _, v := range blockStatus {
+		if v {
+			cnt = cnt + 1
+		}
+	}
+	u.Percent = 100.0 * float32(cnt) / float32(len(blockStatus))
+}
+func (u *UploadSession) AddPercent() {
+	u.Percent = u.Percent + 100*(1.0/float32(u.BlockSize))
+
 }

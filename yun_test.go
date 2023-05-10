@@ -14,9 +14,8 @@ func TestUpdataOne(t *testing.T) {
 		ID:      "testid",
 		Storage: "testStorage",
 		FileMeta: models.FileMeta{
-			Md5:         "testMd5",
-			Size:        123456,
-			CreatedTime: time.Now(),
+			Md5:  "testMd5",
+			Size: 123456,
 		},
 	})
 	if err != nil {
@@ -46,4 +45,11 @@ func TestDeleteOne(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestTimeSub(t *testing.T) {
+	updatatime := time.Unix(int64(1683257910), 0)
+	nowtime := time.Now()
+	subT := nowtime.Sub(updatatime)
+	t.Fatal(subT.Minutes())
 }

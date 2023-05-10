@@ -11,3 +11,12 @@ type IStreamFile interface {
 	GetName() string
 	GetContent() []byte
 }
+
+type ICreateReq interface {
+	GetContentMd5() string
+	GetSlickMd5() string
+	GetBlockMd5() []string
+	GetSize() string
+	GetName() string
+	GetDir() string
+}

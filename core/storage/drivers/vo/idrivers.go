@@ -3,7 +3,15 @@ package vo
 import (
 	"context"
 	"net/http"
+
+	"github.com/pipikai/yun/core/storage/models"
+	"github.com/pipikai/yun/pb"
 )
+
+// 不处理数据库，只负责文件的处理
+type FileMete interface {
+	GetMd5() string
+}
 
 type ILink interface {
 	GetPath() string
@@ -19,10 +27,13 @@ type Driver interface {
 
 type Readder interface {
 	Link(context.Context, IDir) (ILink, error)
+	GetCap(context.Context) (int64, error)
 }
 
 type Writter interface {
-	Upload(context.Context, IStreamFile) (ILink, error)
+	PreUpload(context.Context, *pb.PreUploadRequest) (*pb.PreUploadReply, error)
+	Upload(context.Context, *pb.UploadRequest) (*pb.UploadReply, error)
+	CreateFile(context.Context, *models.File) (*pb.MergeReply, error)
 	Remove(context.Context, IDir) error
 }
 

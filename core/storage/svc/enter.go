@@ -36,7 +36,6 @@ func (s *Server) InitDriver() error {
 		return err
 	}
 
-	logger.Logger.Infof("driver :%s  \nAddtion: %v", s.Config.DriverName, dr.GetAddition())
 	err = dr.Init(context.Background())
 	if err != nil {
 		logger.Logger.Error("driver :%s init err: %v", s.Config.DriverName, err)
@@ -44,6 +43,8 @@ func (s *Server) InitDriver() error {
 		return err
 	}
 	s.Driver = dr
+	logger.Logger.Infof("driver %s init done ! \nAddtion: %v", s.Config.DriverName, dr.GetAddition())
+
 	return nil
 }
 func NewSVC() *Server {

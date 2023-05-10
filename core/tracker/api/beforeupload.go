@@ -2,12 +2,13 @@ package api
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pipikai/yun/common/leveldb"
 	"github.com/pipikai/yun/common/logger"
-	"github.com/pipikai/yun/common/strategy"
+	common_models "github.com/pipikai/yun/common/models"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/tracker/models"
 	"github.com/pipikai/yun/pb"
@@ -20,13 +21,14 @@ type BeforeUploadReq struct {
 	Md5       string   `json:"md5"`
 	ModTime   int64    `json:"mod_time"`
 	BlockSize int64    `json:"block_size"`
-	Blocks    []byte   `json:"blocks"`
 	BlockMd5  []string `json:"block_md5s"`
+	Type      string   `json:"type"`
 }
 
 func BeforeUpload(c *gin.Context) {
 	type Res struct {
-		SessionID   string
+		SessionID   string `json:"session_id"`
+		Code        int    `json:"code"`
 		BlockStatus []bool `json:"blocks"`
 	}
 	var req BeforeUploadReq
@@ -55,45 +57,75 @@ func BeforeUpload(c *gin.Context) {
 		return
 	}
 
+	newFileinfo := &models.File{
+		FileMeta: common_models.FileMeta{
+			Size:    req.Size,
+			ModTime: req.ModTime,
+			Md5:     req.Md5,
+		},
+		Storage:     *storage,
+		Name:        req.Filename,
+		Status:      0,
+		CreatedTime: time.Now().Unix(),
+	}
+
 	res := &Res{
 		BlockStatus: make([]bool, 0),
 	}
 	session := &models.UploadSession{
-		ID:          strategy.GenFileUid(req.Md5, time.UnixMicro(req.ModTime)),
-		Storage:     *storage,
+		ID:          strconv.Itoa(int(time.Now().Unix())),
+		FileID:      newFileinfo.GetID(),
+		CreatedTime: time.Now().Unix(),
+		Status:      "上传中",
+		Percent:     0,
 		BlockSize:   req.BlockSize,
-		BlockMD5:    req.BlockMd5,
-		CreatedTime: time.Now(),
-		Status:      "uploading",
-		FileName:    req.Filename,
-		Size:        req.Size,
 	}
 
 	// 秒传
-	irpc_res, err := Dial(session.Storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
+	irpc_res, err := Dial(storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
 		return client.PreUpload(context.Background(), &pb.PreUploadRequest{
 			SessionId: session.ID,
-			Md5:       req.Md5,
-			BlockMd5:  req.BlockMd5,
+			Filemata: &pb.FileMeta{
+				Size:    req.Size,
+				Name:    req.Filename,
+				ModTime: req.ModTime,
+				Md5:     req.Md5,
+			},
+			BlockMd5: req.BlockMd5,
 		})
 	})
 	if err != nil {
 		util.Response.Error(c, nil, "rpc PreUpload error")
-
+		return
 	}
 	rpc_res := irpc_res.(*pb.PreUploadReply)
 	if rpc_res.Code == 2 {
-		util.Response.ResponsFmt(c, 200, 2, gin.H{}, "file founded 可以秒传")
 		session.Status = "秒传成功"
-		if err := leveldb.UpdataOne(session); err != nil {
+		session.Percent = 100
+	}
+	res.Code = int(rpc_res.Code)
+	res.BlockStatus = rpc_res.Blockstatus
+	res.SessionID = session.ID
+
+	if of, err := leveldb.GetOne[models.File](newFileinfo.GetID()); err != nil {
+		err = leveldb.UpdataOne(newFileinfo)
+		if err != nil {
 			util.Response.Error(c, nil, err.Error())
 			return
 		}
+	} else {
+		if of.Name == req.Filename {
+			util.Response.Error(c, nil, "相同的文件已存在")
+			return
+		}
+	}
+
+	err = leveldb.UpdataOne(session)
+	if err != nil {
+		util.Response.Error(c, nil, err.Error())
 		return
 	}
 
-	res.BlockStatus = rpc_res.Blockstatus
-	res.SessionID = session.ID
-	util.Response.ResponsFmt(c, 200, 1, gin.H{"data": res}, "")
+	util.Response.Success(c, gin.H{"data": res}, "before upload")
 
 }

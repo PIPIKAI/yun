@@ -6,19 +6,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pipikai/yun/common/leveldb"
 	"github.com/pipikai/yun/common/logger"
+	common_models "github.com/pipikai/yun/common/models"
 	"github.com/pipikai/yun/core/tracker/models"
 )
 
 func HanldeStorageServerReport(c *gin.Context) {
-	var req models.ServerReport
-	c.ShouldBind(&req)
-
+	var req common_models.Report
+	err := c.ShouldBind(&req)
+	if err != nil {
+		logger.Logger.Error(err)
+	}
 	nowStorage := models.Storage{
-		Group:      req.Group,
-		ServerAddr: req.IpAddr,
-		Cap:        req.Cap,
-		Status:     req.Status,
-		UpdataTime: time.Now().Unix(),
+		Group:        req.Group,
+		ServerAddr:   req.IpAddr + req.RpcPort,
+		DownloadAddr: req.IpAddr + req.HttpPort,
+		Cap:          req.Cap,
+		Status:       req.Status,
+		UpdataTime:   time.Now().Unix(),
 	}
 
 	group, err := leveldb.GetOne[models.Group](req.Group)

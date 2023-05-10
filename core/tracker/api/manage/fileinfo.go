@@ -7,17 +7,20 @@ import (
 	"github.com/pipikai/yun/core/tracker/models"
 )
 
-func GetSession(c *gin.Context) {
-	type Res struct {
-		Sessions []models.UploadSession `json:"upload_session"`
-	}
-	var res Res
-	dbdata, err := leveldb.GetAll[models.UploadSession]()
+func GetFiles(c *gin.Context) {
+	var res []models.File
+
+	dbdata, err := leveldb.GetAll[models.File]()
 
 	if err != nil {
 		util.Response.Error(c, nil, err.Error())
+		return
 	}
-	res.Sessions = dbdata
+	for _, v := range dbdata {
+		if v.Status == 1 {
+			res = append(res, v)
+		}
+	}
 	util.Response.Success(c, gin.H{
 		"data": res,
 	}, "ok")

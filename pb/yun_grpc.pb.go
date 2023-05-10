@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.19.1
-// source: yun.proto
+// source: pb/yun.proto
 
 package pb
 
@@ -255,5 +255,5 @@ var Storage_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "yun.proto",
+	Metadata: "pb/yun.proto",
 }

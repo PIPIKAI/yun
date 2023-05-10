@@ -4,19 +4,23 @@ import "github.com/spf13/viper"
 
 type StorageConfig struct {
 	Dev           bool
-	ListenOn      string
+	IpAddr        string
+	RpcPort       string
+	HttpPort      string
 	Group         string
 	DriverName    string
-	DriverAddtion map[string]string
 	Trackers      []string
 	FileSizeLimit int64
+	DriverAddtion map[string]string
 }
 
 func NewStorageConfig() *StorageConfig {
 
 	return &StorageConfig{
 		Dev:           viper.GetBool("Dev"),
-		ListenOn:      viper.GetString("ListenOn"),
+		IpAddr:        viper.GetString("IpAddr"),
+		RpcPort:       viper.GetString("RpcPort"),
+		HttpPort:      viper.GetString("HttpPort"),
 		Group:         viper.GetString("Group"),
 		DriverName:    viper.GetString("DriverName"),
 		FileSizeLimit: viper.GetInt64("FileSizeLimit"),

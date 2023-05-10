@@ -27,6 +27,8 @@ func ManageRouter(g *gin.Engine) {
 	rg := g.Group("manage/")
 
 	rg.GET("fileinfo", GetFileInfos)
-	rg.GET("uploadsession", GetSession)
+	rg.GET("uploading", GetUploading)
+	rg.GET("uploaded", GetUploaded)
 	rg.GET("status", GetStatus)
+	rg.DELETE("delsession", DelSession)
 }

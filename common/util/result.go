@@ -20,5 +20,5 @@ func (r ResponseStruct) Success(ctx *gin.Context, data gin.H, msg string) {
 func (r ResponseStruct) Error(ctx *gin.Context, data gin.H, msg string) {
 	logger.Logger.Error(msg)
 
-	r.ResponsFmt(ctx, http.StatusBadRequest, 400, data, msg)
+	r.ResponsFmt(ctx, 200, 400, data, msg)
 }

@@ -3,11 +3,11 @@ package svc
 import (
 	"context"
 	"log"
+	"net"
 
 	"github.com/pipikai/yun/common/logger"
 	"github.com/pipikai/yun/core/storage/api"
 	"github.com/pipikai/yun/pb"
-	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc"
 )
 
@@ -19,24 +19,30 @@ func (s *Server) Manage(ctx context.Context, in *pb.ManageRequest) (reply *pb.Ma
 	return
 }
 
-func (s *Server) RpcServer(m cmux.CMux) {
-	grpcL := m.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
-
-	gs := grpc.NewServer()
+func (s *Server) RpcServer() {
+	// grpcL := m.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
+	lis, err := net.Listen("tcp", s.Config.RpcPort)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	gs := grpc.NewServer(
+		grpc.MaxRecvMsgSize(20*1024*1024),
+		grpc.MaxSendMsgSize(20*1024*1024),
+	)
 	pb.RegisterStorageServer(gs, s)
-	logger.Logger.Infof("grpc server listening at %v", grpcL.Addr())
-	if err := gs.Serve(grpcL); err != nil {
+	logger.Logger.Infof("grpc server listening at %v", lis.Addr())
+	if err := gs.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
 
-func (s *Server) HTTPServer(m cmux.CMux) {
-	httpL := m.Match(cmux.HTTP1Fast())
-	logger.Logger.Info(s.Config.DriverAddtion["rootpath"])
-
+func (s *Server) HTTPServer() {
 	s.G.Use(api.Proxy())
 	if s.Config.DriverName == "Local" {
 		s.G.Static("", s.Config.DriverAddtion["rootpath"])
 	}
-	s.G.RunListener(httpL)
+
+	if err := s.G.Run(s.Config.HttpPort); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
 }

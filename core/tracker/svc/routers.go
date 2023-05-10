@@ -7,8 +7,14 @@ import (
 
 func Router(g *gin.Engine) *gin.Engine {
 	g.Use(api.Download())
-	g.POST("/beforupload", api.BeforeUpload)
-	g.POST("/upload", api.Upload)
+	rg := g.Group("/api")
+	{
+		rg.POST("/beforupload", api.BeforeUpload)
+		rg.POST("/reupload", api.ReUploadSession)
+		rg.POST("/upload", api.Upload)
+		rg.POST("/merge", api.Merge)
+	}
+
 	g.POST("/report-status", api.HanldeStorageServerReport)
 	return g
 }

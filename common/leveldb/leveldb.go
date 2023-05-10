@@ -33,7 +33,7 @@ func NewLDB(name string) (ldb *LevelDb, err error) {
 	if ok {
 		return ldb, nil
 	}
-	NewDB, err := leveldb.OpenFile(viper.GetString("DBdir")+"/"+name, nil)
+	NewDB, err := leveldb.OpenFile("db/"+viper.GetString("DBdir")+"/"+name, nil)
 	if err != nil {
 		return ldb, err
 	}

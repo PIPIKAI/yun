@@ -22,6 +22,13 @@ message HeartBeatReply {
   map<string,string> status = 1;
 }
 
+message FileMeta {
+  int64 size = 1;
+  string name = 2;
+  string format = 3;
+  int64 ModTime = 4;
+  string md5 = 5;
+}
 
 message File {
     string fileName =1;
@@ -30,15 +37,15 @@ message File {
 
 }
 message UploadRequest{
-    string sessionId = 1;
+    string fileId = 1;
     int64 blockId = 2;
     bytes rawData = 3;
 }
 
 message PreUploadRequest{
-  string sessionId=1;
-  string md5 = 2;
-  repeated string blockMd5=3;
+  string sessionId = 1;
+  FileMeta filemata = 2;
+  repeated string blockMd5 = 3;
 }
 
 message PreUploadReply{
@@ -46,13 +53,12 @@ message PreUploadReply{
   repeated bool blockstatus= 2;
 }
 message MergeRequest{
-    string sessionId = 1;
-    int64 size = 2;
-    int64 blockSize = 3;
+    string md5 = 1;
+    int64 blockSize = 2;
 }
 
 message MergeReply {
-  string md5 = 1;
+  string path = 1;
 }
 message Strings{
   repeated string strs = 1;

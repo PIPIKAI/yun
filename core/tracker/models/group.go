@@ -9,11 +9,12 @@ import (
 var GroupDB = "group_db"
 
 type Storage struct {
-	Group      string `json:"group"`
-	ServerAddr string `json:"server_addr"`
-	Status     string `json:"status"`
-	Cap        int64  `json:"cap"`
-	UpdataTime int64  `json:"updata_time"`
+	Group        string `json:"group"`
+	ServerAddr   string `json:"server_addr"`
+	DownloadAddr string `json:"download_addr"`
+	Status       string `json:"status"`
+	Cap          int64  `json:"cap"`
+	UpdataTime   int64  `json:"updata_time"`
 }
 
 func (s Storage) GetClientKey() string {

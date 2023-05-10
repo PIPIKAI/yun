@@ -8,11 +8,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pipikai/yun/common/consts"
 	"github.com/pipikai/yun/common/leveldb"
 	"github.com/pipikai/yun/common/logger"
 	"github.com/pipikai/yun/common/util"
-	"github.com/pipikai/yun/core/storage/drivers/vo"
 	"github.com/pipikai/yun/core/tracker/models"
 )
 
@@ -23,73 +21,47 @@ func Download() gin.HandlerFunc {
 		if c.Request.Method != "GET" {
 			c.Next()
 		}
-		matched, _ := regexp.MatchString("^/group/", c.Request.RequestURI)
+		matched, _ := regexp.MatchString("^/file/", c.Request.RequestURI)
 
 		if !matched {
 			return
 		}
 
-		g := strings.Split(c.Request.RequestURI, "/")[2]
+		fileId := strings.Split(c.Request.RequestURI, "/")[2]
 
-		token := strings.Split(c.Request.RequestURI, "/")[3]
-		if g == "" {
-			util.Response.ResponsFmt(c, http.StatusNotFound, 404, nil, "")
-			return
-		}
-
-		logger.Logger.Info("g ", g)
-		logger.Logger.Info("token ", token)
-
-		group, err := leveldb.GetOne[models.Group](g)
+		fileinfo, err := leveldb.GetOne[models.File](fileId)
 		if err != nil {
-			util.Response.Error(c, nil, err.Error())
+			util.Response.ResponsFmt(c, http.StatusNotFound, 404, nil, "File Not Found")
 			return
 		}
-		storage, err := SelectStorage(c, group)
-		if err != nil {
-			util.Response.Error(c, nil, err.Error())
+		if fileinfo.Storage.Status != "work" {
+			util.Response.Error(c, nil, "Storage Not Working")
 			return
 		}
 
-		fdb, err := leveldb.NewLDB(consts.File_List_DB)
-		if err != nil {
-			util.Response.Error(c, nil, err.Error())
-			return
+		if fileinfo.Link.Header != nil {
+			c.Request.Header = fileinfo.Link.Header
 		}
-		link_byte, err := fdb.Do(token)
+		remote, err := url.Parse("http://" + fileinfo.Storage.DownloadAddr + "/" + fileinfo.Link.Path)
+
 		if err != nil {
 			util.Response.Error(c, nil, err.Error())
 			return
 		}
 
-		var link vo.Link
-		err = util.Json.Unmarshal(link_byte, &link)
-		if err != nil {
-			util.Response.Error(c, nil, err.Error())
-			return
+		proxy := httputil.NewSingleHostReverseProxy(remote)
+		proxy.Director = func(req *http.Request) {
+			req.Header = c.Request.Header
+			req.Host = remote.Host
+			req.URL = remote
 		}
+		proxy.ServeHTTP(c.Writer, c.Request)
 
-		if link.Header != nil {
-			c.Request.Header = link.Header
-		}
-		if remote, err := url.Parse(link.Path); err == nil {
-			c.Request.Header = link.Header
-			// c.Redirect(http.StatusMovedPermanently, link.Path)
-			proxy := httputil.NewSingleHostReverseProxy(remote)
-			proxy.Director = func(req *http.Request) {
-				req.Header = c.Request.Header
-				req.Host = remote.Host
-				req.URL = remote
-			}
-			proxy.ServeHTTP(c.Writer, c.Request)
-			return
-		}
+		// c.Request.URL.Path = string(link.GetPath())
 
-		c.Request.URL.Path = string(link.Path)
-
-		logger.Logger.Debug(c.Request)
-		// group, err := ldb.GetGroup(g)
-		HTTPProxy(c, "http", storage.ServerAddr)
+		// logger.Logger.Debug(c.Request)
+		// // group, err := ldb.GetGroup(g)
+		// HTTPProxy(c, "http", storage.ServerAddr)
 	}
 }
 
