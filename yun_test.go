@@ -51,5 +51,5 @@ func TestTimeSub(t *testing.T) {
 	updatatime := time.Unix(int64(1683257910), 0)
 	nowtime := time.Now()
 	subT := nowtime.Sub(updatatime)
-	t.Fatal(subT.Minutes())
+	t.Log(subT.Minutes())
 }

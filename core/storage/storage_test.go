@@ -8,7 +8,7 @@ import (
 )
 
 func TestDiskUsage(t *testing.T) {
-	path := "/home/zzk/project/yun/storage-1"
+	path := "./"
 	if runtime.GOOS == "windows" {
 		path = "C:"
 	}
@@ -19,6 +19,5 @@ func TestDiskUsage(t *testing.T) {
 	if v.Path != path {
 		t.Errorf("error %v", err)
 	}
-	t.Errorf("%+v", v)
 
 }
