@@ -1,0 +1,65 @@
+name: Go Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.20'
+
+      - name: Install dependencies
+        run: go mod tidy
+
+      - name: Build for Linux
+        run: |
+          mkdir -p release
+          GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o release/yun-linux-amd64 yun.go
+
+      - name: Build for Windows
+        run: |
+          mkdir -p release
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o release/yun-windows-amd64.exe yun.go
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release/yun-linux-amd64
+          asset_name: yun-linux-amd64
+          asset_content_type: application/octet-stream
+      
+      - name: Upload Release Asset
+        id: upload-release-asset-win
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release/yun-windows-amd64.exe
+          asset_name: yun-windows-amd64.exe
+          asset_content_type: application/x-msdownload
