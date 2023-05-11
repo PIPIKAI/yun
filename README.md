@@ -1,6 +1,7 @@
 # YUN
 
 ![GitHub release (latest by date)](https://img.shields.io/github/downloads/pipikai/yun/latest/total)
+![GitHub](https://img.shields.io/github/license/pipikai/yun)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/pipikai/yun)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/a8b52c71ed6c43b3866f8a59ef3b684d)](https://app.codacy.com/gh/PIPIKAI/yun/dashboard?utm_source=gh\&utm_medium=referral\&utm_content=\&utm_campaign=Badge_grade)
 
