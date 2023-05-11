@@ -1,3 +1,4 @@
+// package vipper init
 package config
 
 import (
@@ -7,6 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// InitViper
 func InitViper() {
 	workDir, _ := os.Getwd()
 	viper.SetConfigName(flags.ConfigFile)

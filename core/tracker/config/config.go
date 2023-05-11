@@ -2,6 +2,7 @@ package config
 
 import "github.com/spf13/viper"
 
+// TrackerConfig
 type TrackerConfig struct {
 	Mode     string
 	TempDir  string
@@ -11,6 +12,9 @@ type TrackerConfig struct {
 	}
 }
 
+// NewTrackerConfig
+//
+//	@return *TrackerConfig
 func NewTrackerConfig() *TrackerConfig {
 	return &TrackerConfig{
 		Mode:     viper.GetString("Mode"),

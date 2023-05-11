@@ -1,3 +1,4 @@
+// cmd flags
 package flags
 
 var (

@@ -1,3 +1,4 @@
+// driver local , store file in local disk
 package local
 
 import (
@@ -17,8 +18,9 @@ import (
 	"github.com/shirou/gopsutil/disk"
 )
 
-var temp_path = "temp/_tmp/"
+var tempPath = "temp/_tmp/"
 
+// Addition
 type Addition struct {
 	Cap      int64
 	RootPath string
@@ -26,13 +28,26 @@ type Addition struct {
 
 var mkdirPerm = 0777
 
+// Local
 type Local struct {
 	Addition
 }
 
+// GetCap 获取容量
+//
+//	@receiver d
+//	@param ctx
+//	@return int64
+//	@return error
 func (d *Local) GetCap(ctx context.Context) (int64, error) {
 	return d.Cap, nil
 }
+
+// Init local dirver configs disk infos
+//
+//	@receiver d
+//	@param ctx
+//	@return error
 func (d *Local) Init(ctx context.Context) error {
 	if !util.Exists(d.RootPath) {
 		if err := os.MkdirAll(d.RootPath, fs.FileMode(mkdirPerm)); err != nil {
@@ -88,10 +103,18 @@ func (d *Local) Init(ctx context.Context) error {
 // PreUpload(context.Context, *pb.PreUploadRequest) (*pb.PreUploadReply, error)
 // Upload(context.Context, *pb.UploadRequest) (*pb.UploadReply, error)
 // CreateFile(context.Context, *pb.MergeRequest) (*pb.MergeReply, error)
+
+// PreUpload 上传文件之前校验文件
+//
+//	@receiver d
+//	@param ctx
+//	@param req
+//	@return *pb.PreUploadReply
+//	@return error
 func (d *Local) PreUpload(ctx context.Context, req *pb.PreUploadRequest) (*pb.PreUploadReply, error) {
 	block_status := make([]bool, 0)
 	for _, v := range req.BlockMd5 {
-		_, err := os.Stat(temp_path + v)
+		_, err := os.Stat(tempPath + v)
 		block_status = append(block_status, !os.IsNotExist(err))
 	}
 	return &pb.PreUploadReply{
@@ -100,6 +123,13 @@ func (d *Local) PreUpload(ctx context.Context, req *pb.PreUploadRequest) (*pb.Pr
 	}, nil
 }
 
+// Upload 本地上传分块文件，就是将文件保存在本地目录
+//
+//	@receiver d
+//	@param ctx
+//	@param file
+//	@return *pb.UploadReply
+//	@return error
 func (d *Local) Upload(ctx context.Context, file *pb.UploadRequest) (*pb.UploadReply, error) {
 
 	hash := md5.New()
@@ -107,21 +137,21 @@ func (d *Local) Upload(ctx context.Context, file *pb.UploadRequest) (*pb.UploadR
 	if err != nil {
 		return nil, err
 	}
-	md5_string := hex.EncodeToString(hash.Sum(nil))
+	md5String := hex.EncodeToString(hash.Sum(nil))
 
-	if err := os.MkdirAll(temp_path, fs.FileMode(mkdirPerm)); err != nil {
+	if err := os.MkdirAll(tempPath, fs.FileMode(mkdirPerm)); err != nil {
 		return nil, err
 	}
-	// _, err = os.Stat(temp_path + md5_string)
+	// _, err = os.Stat(tempPath + md5String)
 	// if !os.IsNotExist(err) {
 	// 	// 若文件已经存在
 	// 	os.
 	// 	return &pb.UploadReply{
-	// 		Md5: md5_string,
+	// 		Md5: md5String,
 	// 	}, nil
 	// }
 
-	f, err := os.OpenFile(temp_path+md5_string, os.O_CREATE|os.O_RDWR, fs.FileMode(mkdirPerm))
+	f, err := os.OpenFile(tempPath+md5String, os.O_CREATE|os.O_RDWR, fs.FileMode(mkdirPerm))
 	if err != nil {
 		return nil, err
 	}
@@ -131,10 +161,17 @@ func (d *Local) Upload(ctx context.Context, file *pb.UploadRequest) (*pb.UploadR
 		return nil, err
 	}
 	return &pb.UploadReply{
-		Md5: md5_string,
+		Md5: md5String,
 	}, nil
 }
 
+// CreateFile 合并分块文件
+//
+//	@receiver d
+//	@param ctx
+//	@param file
+//	@return *pb.MergeReply
+//	@return error
 func (d *Local) CreateFile(ctx context.Context, file *models.File) (*pb.MergeReply, error) {
 	f, err := os.OpenFile(d.RootPath+"/"+file.GetPath(), os.O_CREATE|os.O_RDWR, fs.FileMode(mkdirPerm))
 	if err != nil {
@@ -143,14 +180,14 @@ func (d *Local) CreateFile(ctx context.Context, file *models.File) (*pb.MergeRep
 	defer f.Close()
 	// toDo 这里可以考虑用协程
 	for _, filename := range file.BlockMd5 {
-		content, err := os.ReadFile(temp_path + filename)
+		content, err := os.ReadFile(tempPath + filename)
 		if err != nil {
 			return nil, err
 		}
 		f.Write(content)
 	}
 	for _, filename := range file.BlockMd5 {
-		err = os.Remove(temp_path + filename)
+		err = os.Remove(tempPath + filename)
 		if err != nil {
 			return nil, err
 		}
@@ -160,10 +197,23 @@ func (d *Local) CreateFile(ctx context.Context, file *models.File) (*pb.MergeRep
 	}, nil
 }
 
+// Link 获取文件真实链接
+//
+//	@receiver d
+//	@param ctx
+//	@param dir
+//	@return vo.ILink
+//	@return error
 func (d *Local) Link(ctx context.Context, dir vo.IDir) (vo.ILink, error) {
 	return nil, nil
 }
 
+// Remove 删除文件
+//
+//	@receiver d
+//	@param ctx
+//	@param dir
+//	@return error
 func (d *Local) Remove(ctx context.Context, dir vo.IDir) error {
 
 	return nil

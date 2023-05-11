@@ -1,3 +1,4 @@
+// package
 package cmd
 
 import (
@@ -8,20 +9,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var RootCmd = &cobra.Command{
+var rootCmd = &cobra.Command{
 	Use:   "yun",
 	Short: "a distribution file storage supprt multiple storage.",
 	Long: `a distribution file storage supprt multiple storage,
 		Complete documentation is available at xxx`,
 }
 
+// Execute app enter
 func Execute() {
-	if err := RootCmd.Execute(); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
 func init() {
-	RootCmd.PersistentFlags().StringVar(&flags.ConfigFile, "f", "storage-1", "config file path")
+	rootCmd.PersistentFlags().StringVar(&flags.ConfigFile, "f", "storage-1", "config file path")
 }

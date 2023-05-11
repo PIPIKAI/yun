@@ -8,9 +8,11 @@ import (
 	"github.com/pipikai/yun/core/tracker/models"
 )
 
+// FreshStorageSpec
 var FreshStorageSpec = "*/60 * * * * *"
 var TimeOutTime = int64(60)
 
+// UpdateStorageStatus
 func UpdateStorageStatus() {
 	groups, err := leveldb.GetAll[models.Group]()
 	if err != nil {

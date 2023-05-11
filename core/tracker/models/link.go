@@ -6,8 +6,10 @@ import (
 	"time"
 )
 
+// LinkDB
 var LinkDB = "link_db"
 
+// MLink
 type MLink struct {
 	Scheme    string
 	Path      string
@@ -15,12 +17,26 @@ type MLink struct {
 	ExpriedAt time.Time
 }
 
+// GetScheme
+//
+//	@receiver l
+//	@return string
 func (l MLink) GetScheme() string {
 	return l.Scheme
 }
+
+// GetPath
+//
+//	@receiver l
+//	@return string
 func (l MLink) GetPath() string {
 	return l.Path
 }
+
+// GetHeader
+//
+//	@receiver l
+//	@return http.Header
 func (l MLink) GetHeader() http.Header {
 	return l.Header
 }

@@ -1,10 +1,12 @@
 package baidu_netdisk
 
+// TokenErrResp
 type TokenErrResp struct {
 	ErrorDescription string `json:"error_description"`
 	Error            string `json:"error"`
 }
 
+// File
 type File struct {
 	//TkbindId     int    `json:"tkbind_id"`
 	//OwnerType    int    `json:"owner_type"`
@@ -49,6 +51,7 @@ type File struct {
 // 	}
 // }
 
+// ListResp
 type ListResp struct {
 	Errno     int    `json:"errno"`
 	GuidInfo  string `json:"guid_info"`
@@ -57,6 +60,7 @@ type ListResp struct {
 	Guid      int    `json:"guid"`
 }
 
+// DownloadResp
 type DownloadResp struct {
 	Errmsg string `json:"errmsg"`
 	Errno  int    `json:"errno"`
@@ -68,6 +72,7 @@ type DownloadResp struct {
 	RequestId string `json:"request_id"`
 }
 
+// DownloadResp2
 type DownloadResp2 struct {
 	Errno int `json:"errno"`
 	Info  []struct {
@@ -76,6 +81,7 @@ type DownloadResp2 struct {
 	RequestID int64 `json:"request_id"`
 }
 
+// PrecreateResp
 type PrecreateResp struct {
 	Path       string `json:"path"`
 	Uploadid   string `json:"uploadid"`

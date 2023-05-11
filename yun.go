@@ -1,3 +1,4 @@
+// package
 package main
 
 import "github.com/pipikai/yun/cmd"

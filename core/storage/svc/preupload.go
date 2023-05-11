@@ -9,6 +9,13 @@ import (
 	"github.com/pipikai/yun/pb"
 )
 
+// PreUpload
+//
+//	@receiver s
+//	@param ctx
+//	@param in
+//	@return *pb.PreUploadReply
+//	@return error
 func (s *Server) PreUpload(ctx context.Context, in *pb.PreUploadRequest) (*pb.PreUploadReply, error) {
 
 	v, err := leveldb.GetOne[models.File](in.Filemata.Md5)

@@ -9,6 +9,10 @@ import (
 	"github.com/pipikai/yun/core/tracker/models"
 )
 
+// SelectMaxCapGroup
+//
+//	@return *models.Group
+//	@return error
 func SelectMaxCapGroup() (*models.Group, error) {
 	var res models.Group
 
@@ -25,6 +29,12 @@ func SelectMaxCapGroup() (*models.Group, error) {
 	return &res, nil
 }
 
+// SelectStorage
+//
+//	@param c
+//	@param group
+//	@return *models.Storage
+//	@return error
 func SelectStorage(c *gin.Context, group *models.Group) (*models.Storage, error) {
 	storages := group.GetValidStorages()
 	if storages == nil {

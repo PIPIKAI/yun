@@ -10,12 +10,16 @@ import (
 	"github.com/pipikai/yun/pb"
 )
 
+// MergeReq
 type MergeReq struct {
 	SessionID string `json:"session_id"`
 	Size      int64  `json:"size"`
 	BlockSize int64  `json:"block_size"`
 }
 
+// Merge
+//
+//	@param c
 func Merge(c *gin.Context) {
 
 	var req MergeReq

@@ -1,3 +1,4 @@
+// package
 package api
 
 import (
@@ -8,6 +9,9 @@ import (
 	"github.com/pipikai/yun/common/logger"
 )
 
+// Proxy
+//
+//	@return gin.HandlerFunc
 func Proxy() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		matched, _ := regexp.MatchString("^/http", ctx.Request.RequestURI)

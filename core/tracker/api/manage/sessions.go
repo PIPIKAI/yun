@@ -9,6 +9,7 @@ import (
 	"github.com/pipikai/yun/core/tracker/models"
 )
 
+// Res
 type Res struct {
 	Session  models.UploadSession `json:"upload_session"`
 	FileInfo models.File          `json:"file_info"`
@@ -40,6 +41,10 @@ func getSession(conditon func(Res) bool) ([]Res, error) {
 	})
 	return res, nil
 }
+
+// GetUploading
+//
+//	@param c
 func GetUploading(c *gin.Context) {
 	res, err := getSession(func(r Res) bool { return true })
 	if err != nil {
@@ -50,6 +55,10 @@ func GetUploading(c *gin.Context) {
 		"data": res,
 	}, "ok")
 }
+
+// GetUploaded
+//
+//	@param c
 func GetUploaded(c *gin.Context) {
 	res, err := getSession(func(r Res) bool { return r.Session.Percent >= 100 })
 	if err != nil {
@@ -61,6 +70,9 @@ func GetUploaded(c *gin.Context) {
 	}, "ok")
 }
 
+// DelSession
+//
+//	@param c
 func DelSession(c *gin.Context) {
 	type Req struct {
 		SessionID string `json:"session_id"`

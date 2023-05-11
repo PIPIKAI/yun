@@ -1,3 +1,4 @@
+// Tracker core
 package svc
 
 import (
@@ -9,12 +10,16 @@ import (
 	"github.com/pipikai/yun/core/tracker/crons"
 )
 
+// Svc
 type Svc struct {
 	g         *gin.Engine
 	config    *config.TrackerConfig
 	schedules schedule.ScheduleManage
 }
 
+// NewSvc
+//
+//	@return *Svc
 func NewSvc() *Svc {
 	svc := &Svc{
 		g:         gin.Default(),
@@ -27,6 +32,9 @@ func NewSvc() *Svc {
 	return svc
 }
 
+// Server
+//
+//	@receiver s
 func (s *Svc) Server() {
 	s.schedules.Add(crons.FreshStorageSpec, crons.UpdateStorageStatus)
 	s.schedules.Add(crons.CheckSessionStatusSpec, crons.CheckSessionStatus)

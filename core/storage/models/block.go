@@ -1,7 +1,9 @@
+// package
 package models
 
 import "time"
 
+// BlockDB
 var BlockDB = "block_db"
 
 // k: md5

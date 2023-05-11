@@ -13,6 +13,7 @@ import (
 	"github.com/pipikai/yun/pb"
 )
 
+// Server
 type Server struct {
 	pb.UnimplementedStorageServer
 	Config   *config.StorageConfig
@@ -22,6 +23,10 @@ type Server struct {
 	Driver   vo.Driver
 }
 
+// InitDriver
+//
+//	@receiver s
+//	@return error
 func (s *Server) InitDriver() error {
 	dr := drivers.GetDriver(s.Config.DriverName)
 	if dr == nil {
@@ -47,6 +52,10 @@ func (s *Server) InitDriver() error {
 
 	return nil
 }
+
+// NewSVC
+//
+//	@return *Server
 func NewSVC() *Server {
 	s := &Server{
 		Config:   config.NewStorageConfig(),

@@ -7,11 +7,11 @@ import (
 )
 
 var (
-	ObjectNotFound = errors.New("object not found")
-	NotFolder      = errors.New("not a folder")
-	NotFile        = errors.New("not a file")
+	ErrObjectNotFound = errors.New("object not found")
+	ErrNotFolder      = errors.New("not a folder")
+	ErrNotFile        = errors.New("not a file")
 )
 
 func IsObjectNotFound(err error) bool {
-	return errors.Is(pkgerr.Cause(err), ObjectNotFound)
+	return errors.Is(pkgerr.Cause(err), ErrObjectNotFound)
 }

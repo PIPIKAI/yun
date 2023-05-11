@@ -1,3 +1,4 @@
+// package
 package resources
 
 import "embed"

@@ -7,6 +7,9 @@ import (
 	"github.com/pipikai/yun/common/util"
 )
 
+// GetFileInfos
+//
+//	@param c
 func GetFileInfos(c *gin.Context) {
 	type Res struct {
 		FileInfo []models.FileInfo `json:"file_info"`

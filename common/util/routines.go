@@ -7,6 +7,13 @@ import (
 	"github.com/PIPIKAI/gomdfs/common/errs"
 )
 
+// WithTimeoutRoutine
+//
+//	@param td
+//	@param args
+//	@param fc
+//	@return interface{}
+//	@return error
 func WithTimeoutRoutine(td time.Duration, args interface{}, fc func(interface{}) (interface{}, error)) (interface{}, error) {
 	ctx, cancer := context.WithTimeout(context.Background(), td)
 	defer cancer()

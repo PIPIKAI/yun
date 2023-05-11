@@ -9,6 +9,13 @@ import (
 	"github.com/pipikai/yun/pb"
 )
 
+// Merge
+//
+//	@receiver s
+//	@param ctx
+//	@param in
+//	@return *pb.MergeReply
+//	@return error
 func (s *Server) Merge(ctx context.Context, in *pb.MergeRequest) (*pb.MergeReply, error) {
 
 	file, err := leveldb.GetOne[models.File](in.Md5)

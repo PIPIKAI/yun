@@ -1,3 +1,4 @@
+// package
 package core
 
 import (
@@ -10,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Program Start
 func Start() {
 	config.InitViper()
 

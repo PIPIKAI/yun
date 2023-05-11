@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var LsCmd = &cobra.Command{
+var lsCmd = &cobra.Command{
 	Use:   "ls",
 	Short: "show all file info ",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -30,5 +30,5 @@ func ls() {
 }
 
 func init() {
-	RootCmd.AddCommand(LsCmd)
+	rootCmd.AddCommand(lsCmd)
 }

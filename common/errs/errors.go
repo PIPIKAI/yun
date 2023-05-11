@@ -1,3 +1,4 @@
+// package errs define
 package errs
 
 import (
@@ -5,13 +6,13 @@ import (
 )
 
 var (
-	NotImplement = errors.New("not implement")
-	NotSupport   = errors.New("not support")
-	RelativePath = errors.New("access using relative path is not allowed")
+	ErrNotImplement = errors.New("not implement")
+	ErrNotSupport   = errors.New("not support")
+	ErrRelativePath = errors.New("access using relative path is not allowed")
 
-	MoveBetweenTwoStorages = errors.New("can't move files between two storages, try to copy")
-	UploadNotSupported     = errors.New("upload not supported")
+	ErrMoveBetweenTwoStorages = errors.New("can't move files between two storages, try to copy")
+	ErrUploadNotSupported     = errors.New("upload not supported")
 
-	MetaNotFound = errors.New("meta not found")
-	EmptyToken   = errors.New("empty token")
+	ErrMetaNotFound = errors.New("meta not found")
+	ErrEmptyToken   = errors.New("empty token")
 )

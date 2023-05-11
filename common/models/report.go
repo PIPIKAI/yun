@@ -1,5 +1,6 @@
 package models
 
+// Report json body
 type Report struct {
 	Group    string `json:"group"`
 	IpAddr   string `json:"ip_addr"`

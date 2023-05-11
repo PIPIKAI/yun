@@ -1,12 +1,19 @@
+// package
 package leveldb
 
 import "encoding/json"
 
+// Models
 type Models interface {
 	GetID() string
 	GetDB() string
 }
 
+// GetOne
+//
+//	@param id
+//	@return *T
+//	@return error
 func GetOne[T Models](id string) (*T, error) {
 	var res T
 	ldb, err := NewLDB(res.GetDB())
@@ -21,6 +28,10 @@ func GetOne[T Models](id string) (*T, error) {
 	return &res, err
 }
 
+// GetAll
+//
+//	@return []T
+//	@return error
 func GetAll[T Models]() ([]T, error) {
 	var t T
 	res := make([]T, 0)
@@ -39,6 +50,11 @@ func GetAll[T Models]() ([]T, error) {
 	iter.Release()
 	return res, nil
 }
+
+// UpdataOne
+//
+//	@param t
+//	@return error
 func UpdataOne[T Models](t T) error {
 	ldb, err := NewLDB(t.GetDB())
 	if err != nil {
@@ -51,6 +67,11 @@ func UpdataOne[T Models](t T) error {
 	_, err = ldb.Do(t.GetID(), data)
 	return err
 }
+
+// DeleteOne
+//
+//	@param id
+//	@return error
 func DeleteOne[T Models](id string) error {
 	var t T
 	ldb, err := NewLDB(t.GetDB())

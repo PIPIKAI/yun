@@ -20,7 +20,7 @@ import (
 
 func (d *BaiduNetdisk) refreshToken() error {
 	err := d._refreshToken()
-	if err != nil && err == errs.EmptyToken {
+	if err != nil && err == errs.ErrEmptyToken {
 		err = d._refreshToken()
 	}
 	return err

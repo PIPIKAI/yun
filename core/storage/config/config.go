@@ -1,7 +1,9 @@
+// package config struct
 package config
 
 import "github.com/spf13/viper"
 
+// StorageConfig
 type StorageConfig struct {
 	Dev           bool
 	IpAddr        string
@@ -14,6 +16,9 @@ type StorageConfig struct {
 	DriverAddtion map[string]string
 }
 
+// NewStorageConfig init
+//
+//	@return *StorageConfig
 func NewStorageConfig() *StorageConfig {
 
 	return &StorageConfig{

@@ -8,7 +8,14 @@ import (
 	"time"
 )
 
-func PostJSON(url string, data interface{}, header map[string]string, timeout time.Duration) (res []byte, err error) {
+// PostJSON
+//
+//	@param url
+//	@param data
+//	@param header
+//	@return res
+//	@return err
+func PostJSON(url string, data interface{}, header map[string]string) (res []byte, err error) {
 	buf, err := json.Marshal(data)
 	if err != nil {
 		return res, err
@@ -22,7 +29,7 @@ func PostJSON(url string, data interface{}, header map[string]string, timeout ti
 		request.Header.Set(key, value)
 	}
 	client := &http.Client{}
-	client.Timeout = time.Second * timeout
+	client.Timeout = time.Second * 5
 	resp, err := client.Do(request)
 	if err != nil {
 		return res, err

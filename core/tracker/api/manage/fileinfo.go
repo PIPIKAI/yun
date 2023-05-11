@@ -7,6 +7,9 @@ import (
 	"github.com/pipikai/yun/core/tracker/models"
 )
 
+// GetFiles
+//
+//	@param c
 func GetFiles(c *gin.Context) {
 	var res []models.File
 

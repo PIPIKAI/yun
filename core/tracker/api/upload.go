@@ -17,7 +17,7 @@ import (
 // select Group -> select storage -> get driver -> driver upload ->
 // get Link , gen token -> save db token:Link , token:FileInfo
 //
-
+//	@param c
 func Upload(c *gin.Context) {
 	session_id := c.PostForm("session_id")                // 获取 URL 中的 ID 参数
 	block_seq, _ := strconv.Atoi(c.PostForm("block_seq")) // 获取 URL 中的 ID 参数

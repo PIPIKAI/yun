@@ -1,3 +1,4 @@
+// package
 package baidu_netdisk
 
 import (
@@ -17,19 +18,33 @@ import (
 	"github.com/pipikai/yun/core/storage/drivers/vo"
 )
 
+// BaiduNetdisk
 type BaiduNetdisk struct {
 	Addition
 	AccessToken string
 }
 
+// Config
+//
+//	@receiver d
+//	@return vo.Config
 func (d *BaiduNetdisk) Config() vo.Config {
 	return config
 }
 
+// GetAddition
+//
+//	@receiver d
+//	@return vo.Addition
 func (d *BaiduNetdisk) GetAddition() vo.Addition {
 	return &d.Addition
 }
 
+// Init
+//
+//	@receiver d
+//	@param ctx
+//	@return error
 func (d *BaiduNetdisk) Init(ctx context.Context) error {
 	return d.refreshToken()
 }
@@ -48,15 +63,36 @@ func (d *BaiduNetdisk) Init(ctx context.Context) error {
 // 	})
 // }
 
+// Link
+//
+//	@receiver d
+//	@param ctx
+//	@param file
+//	@return *models.Link
+//	@return error
 func (d *BaiduNetdisk) Link(ctx context.Context, file vo.IDir) (*models.Link, error) {
 	return d.linkOfficial(file)
 }
+
+// Remove
+//
+//	@receiver d
+//	@param ctx
+//	@param file
+//	@return error
 func (d *BaiduNetdisk) Remove(ctx context.Context, file vo.IDir) error {
 	// data := []string{file.GetPath()}
 	// _, err := d.manage("delete", data)
 	return nil
 }
 
+// Upload
+//
+//	@receiver d
+//	@param ctx
+//	@param stream
+//	@return *models.Link
+//	@return error
 func (d *BaiduNetdisk) Upload(ctx context.Context, stream vo.IStreamFile) (*models.Link, error) {
 	logger.Logger.Info(stream.GetName(), stream.GetSize(), len(stream.GetContent()))
 
@@ -180,6 +216,13 @@ func (d *BaiduNetdisk) Upload(ctx context.Context, stream vo.IStreamFile) (*mode
 	return link, err
 }
 
+// MakeDir
+//
+//	@receiver d
+//	@param ctx
+//	@param parentDir
+//	@param dirName
+//	@return error
 func (d *BaiduNetdisk) MakeDir(ctx context.Context, parentDir vo.IDir, dirName string) error {
 	// _, err := d.create(path.Join(parentDir.GetPath(), dirName), 0, 1, "", "")
 	return nil

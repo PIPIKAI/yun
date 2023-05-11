@@ -1,3 +1,4 @@
+// package tracker core api
 package api
 
 import (
@@ -14,6 +15,7 @@ import (
 	"github.com/pipikai/yun/pb"
 )
 
+// BeforeUploadReq
 type BeforeUploadReq struct {
 	Group     string   `json:"group"`
 	Filename  string   `json:"filename"`
@@ -25,6 +27,9 @@ type BeforeUploadReq struct {
 	Type      string   `json:"type"`
 }
 
+// BeforeUpload
+//
+//	@param c
 func BeforeUpload(c *gin.Context) {
 	type Res struct {
 		SessionID   string `json:"session_id"`

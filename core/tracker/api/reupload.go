@@ -12,6 +12,9 @@ import (
 	"github.com/pipikai/yun/pb"
 )
 
+// ReUploadSession
+//
+//	@param c
 func ReUploadSession(c *gin.Context) {
 	type Req struct {
 		SessionID string   `json:"session_id"`

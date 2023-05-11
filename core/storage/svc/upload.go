@@ -8,6 +8,13 @@ import (
 	"github.com/pipikai/yun/pb"
 )
 
+// Upload
+//
+//	@receiver s
+//	@param ctx
+//	@param in
+//	@return *pb.UploadReply
+//	@return error
 func (s *Server) Upload(ctx context.Context, in *pb.UploadRequest) (*pb.UploadReply, error) {
 	fileinfo, err := leveldb.GetOne[models.File](in.FileId)
 	if err != nil {

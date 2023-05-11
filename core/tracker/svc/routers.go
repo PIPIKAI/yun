@@ -5,6 +5,10 @@ import (
 	"github.com/pipikai/yun/core/tracker/api"
 )
 
+// Router
+//
+//	@param g
+//	@return *gin.Engine
 func Router(g *gin.Engine) *gin.Engine {
 	g.Use(api.Download())
 	rg := g.Group("/api")

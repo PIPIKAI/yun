@@ -1,3 +1,4 @@
+// package manage ui apis
 package manage
 
 import (
@@ -6,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// StartTime
 var StartTime int64
 
 // resourceRouter 静态资源配置
@@ -20,6 +22,9 @@ func resourceRouter(engine *gin.Engine) {
 	engine.NoRoute(html.RedirectIndex)
 }
 
+// ManageRouter
+//
+//	@param g
 func ManageRouter(g *gin.Engine) {
 	StartTime = time.Now().Unix()
 	resourceRouter(g)

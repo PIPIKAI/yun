@@ -6,8 +6,10 @@ import (
 	"github.com/pipikai/yun/common/logger"
 )
 
+// GroupDB
 var GroupDB = "group_db"
 
+// Storage
 type Storage struct {
 	Group        string `json:"group"`
 	ServerAddr   string `json:"server_addr"`
@@ -17,10 +19,15 @@ type Storage struct {
 	UpdataTime   int64  `json:"updata_time"`
 }
 
+// GetClientKey
+//
+//	@receiver s
+//	@return string
 func (s Storage) GetClientKey() string {
 	return s.Group + s.ServerAddr
 }
 
+// Group
 type Group struct {
 	Name     string             `json:"name"`
 	Cap      int64              `json:"cap"`
@@ -28,6 +35,10 @@ type Group struct {
 	Storages map[string]Storage `json:"storages"`
 }
 
+// GetValidStorages
+//
+//	@receiver g
+//	@return storages
 func (g Group) GetValidStorages() (storages []Storage) {
 
 	logger.Logger.Info(g.Storages)
@@ -38,6 +49,11 @@ func (g Group) GetValidStorages() (storages []Storage) {
 	}
 	return
 }
+
+// GetLongLivedStorage
+//
+//	@receiver g
+//	@return storage
 func (g Group) GetLongLivedStorage() (storage Storage) {
 	storage.UpdataTime = time.Now().Unix()
 	for _, v := range g.Storages {
@@ -48,9 +64,18 @@ func (g Group) GetLongLivedStorage() (storage Storage) {
 	return
 }
 
+// GetDB
+//
+//	@receiver d
+//	@return string
 func (d Group) GetDB() string {
 	return GroupDB
 }
+
+// GetID
+//
+//	@receiver d
+//	@return string
 func (d Group) GetID() string {
 	return d.Name
 }

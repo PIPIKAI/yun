@@ -1,5 +1,7 @@
+// package abstract class
 package vo
 
+// Config
 type Config struct {
 	Name              string `json:"name"`
 	LocalSort         bool   `json:"local_sort"`
@@ -13,6 +15,8 @@ type Config struct {
 	Alert             string `json:"alert"` //info,success,warning,danger
 	NoOverwriteUpload bool   `json:"-"`
 }
+
+// TokenResp
 type TokenResp struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`

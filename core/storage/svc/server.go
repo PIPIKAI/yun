@@ -1,7 +1,6 @@
 package svc
 
 import (
-	"context"
 	"log"
 	"net"
 
@@ -11,14 +10,30 @@ import (
 	"google.golang.org/grpc"
 )
 
-func (s *Server) HeartBeat(ctx context.Context, in *pb.HeartBeatRequest) (reply *pb.HeartBeatReply, err error) {
-	return
-}
-func (s *Server) Manage(ctx context.Context, in *pb.ManageRequest) (reply *pb.ManageReply, err error) {
+// // HeartBeat
+// //  @receiver s
+// //  @param ctx
+// //  @param in
+// //  @return reply
+// //  @return err
+// func (s *Server) HeartBeat(ctx context.Context, in *pb.HeartBeatRequest) (reply *pb.HeartBeatReply, err error) {
+// 	return
+// }
 
-	return
-}
+// // Manage
+// //  @receiver s
+// //  @param ctx
+// //  @param in
+// //  @return reply
+// //  @return err
+// func (s *Server) Manage(ctx context.Context, in *pb.ManageRequest) (reply *pb.ManageReply, err error) {
 
+// 	return
+// }
+
+// RpcServer
+//
+//	@receiver s
 func (s *Server) RpcServer() {
 	// grpcL := m.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
 	lis, err := net.Listen("tcp", s.Config.RpcPort)
@@ -36,6 +51,9 @@ func (s *Server) RpcServer() {
 	}
 }
 
+// HTTPServer
+//
+//	@receiver s
 func (s *Server) HTTPServer() {
 	s.G.Use(api.Proxy())
 	if s.Config.DriverName == "Local" {

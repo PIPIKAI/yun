@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var StartCmd = &cobra.Command{
+var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start processes",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -18,5 +18,5 @@ func start() {
 }
 
 func init() {
-	RootCmd.AddCommand(StartCmd)
+	rootCmd.AddCommand(startCmd)
 }

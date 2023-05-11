@@ -13,11 +13,13 @@ type FileMete interface {
 	GetMd5() string
 }
 
+// ILink
 type ILink interface {
 	GetPath() string
 	GetHeader() http.Header
 }
 
+// Driver
 type Driver interface {
 	GetAddition() Addition
 	Init(context.Context) error
@@ -25,11 +27,13 @@ type Driver interface {
 	Writter
 }
 
+// Readder
 type Readder interface {
 	Link(context.Context, IDir) (ILink, error)
 	GetCap(context.Context) (int64, error)
 }
 
+// Writter
 type Writter interface {
 	PreUpload(context.Context, *pb.PreUploadRequest) (*pb.PreUploadReply, error)
 	Upload(context.Context, *pb.UploadRequest) (*pb.UploadReply, error)
@@ -37,4 +41,5 @@ type Writter interface {
 	Remove(context.Context, IDir) error
 }
 
+// Addition
 type Addition interface{}

@@ -10,6 +10,9 @@ import (
 	"github.com/pipikai/yun/core/tracker/models"
 )
 
+// HanldeStorageServerReport
+//
+//	@param c
 func HanldeStorageServerReport(c *gin.Context) {
 	var req common_models.Report
 	err := c.ShouldBind(&req)

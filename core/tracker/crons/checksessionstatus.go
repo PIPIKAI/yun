@@ -8,8 +8,10 @@ import (
 	"github.com/pipikai/yun/core/tracker/models"
 )
 
+// CheckSessionStatusSpec
 var CheckSessionStatusSpec = "*/5 * * * * *"
 
+// CheckSessionStatus
 func CheckSessionStatus() {
 	sessions, err := leveldb.GetAll[models.UploadSession]()
 	if err != nil {
