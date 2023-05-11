@@ -39,13 +39,17 @@ wget https://github.com/PIPIKAI/yun/releases/latest/download/yun
 
 启动客户端：
 
+```bash
     yun start --f "tracker"
+```
 
 需要在配置文件中设置Name:Storage
 
 启动存储端：
 
+```bash
     yun start --f "storage"
+```
 
 贡献指南
 

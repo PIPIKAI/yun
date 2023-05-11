@@ -12,10 +12,8 @@ var DriverCenter = map[string]vo.Driver{
 	// "BaiduNetdisk": baidu_netdisk.New(),
 }
 
-// GetDriver
-//
-//	@param DriverName
-//	@return vo.Driver
+// @param DriverName
+// @return vo.Driver
 func GetDriver(DriverName string) vo.Driver {
 	return DriverCenter[DriverName]
 }
