@@ -2,8 +2,8 @@ name: Go Release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+    - 'v*' # 推送事件匹配 v*, 例如 v1.0，v20.15.10 等来触发工作流
 
 jobs:
   build:
@@ -12,6 +12,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      # 查询版本号（tag）
+      - name: Query version number
+        id: get_version
+        shell: bash
+        run: |
+          echo "using version tag ${GITHUB_REF:10}"
+          echo ::set-output name=version::"${GITHUB_REF:10}"
 
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -37,8 +45,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          release_name: Release ${{ steps.get_version.outputs.VERSION }}
+          body: 'See the assets to download this version and install.'
           draft: false
           prerelease: false
 
