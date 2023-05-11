@@ -1,9 +1,13 @@
 # YUN
 
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/pipikai/yun/latest/total)
-![GitHub](https://img.shields.io/github/license/pipikai/yun)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/pipikai/yun/latest/total?style=flat-square)
+![GitHub](https://img.shields.io/github/license/pipikai/yun?style=flat-square)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/pipikai/yun)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a8b52c71ed6c43b3866f8a59ef3b684d)](https://app.codacy.com/gh/PIPIKAI/yun/dashboard?utm_source=gh\&utm_medium=referral\&utm_content=\&utm_campaign=Badge_grade)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/pipikai/yun?style=flat-square)
+[![HitCount](https://hits.dwyl.com/pipikai/yun.svg?style=flat-square)](http://hits.dwyl.com/pipikai/yun)
+![GitHub last commit](https://img.shields.io/github/last-commit/pipikai/yun?style=flat-square)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a8b52c71ed6c43b3866f8a59ef3b684d)](https://app.codacy.com/gh/PIPIKAI/yun/dashboard?utm_source=gh\&utm_medium=referral\&utm_content=\&utm_campaign=Badge_grade?style=flat-square)
+![GitHub Repo stars](https://img.shields.io/github/stars/pipikai/yun?style=social)
 
 项目介绍
 
