@@ -12,9 +12,6 @@ import (
 // ReportSchedule
 var ReportSchedule = "*/5 * * * * *"
 
-// ReportStatus
-//
-//	@receiver s
 func (s *Server) ReportStatus() {
 	data := models.Report{
 		Group:    s.Config.Group,

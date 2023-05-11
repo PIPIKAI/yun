@@ -7,6 +7,9 @@ import (
 	"github.com/pipikai/yun/core/tracker/models"
 )
 
+// GetStatus
+//
+//	@param c
 func GetStatus(c *gin.Context) {
 	type Res struct {
 		StartTime int64          `json:"start_time"`

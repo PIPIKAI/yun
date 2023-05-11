@@ -23,10 +23,6 @@ type Server struct {
 	Driver   vo.Driver
 }
 
-// InitDriver
-//
-//	@receiver s
-//	@return error
 func (s *Server) InitDriver() error {
 	dr := drivers.GetDriver(s.Config.DriverName)
 	if dr == nil {

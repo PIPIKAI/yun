@@ -35,10 +35,6 @@ type Group struct {
 	Storages map[string]Storage `json:"storages"`
 }
 
-// GetValidStorages
-//
-//	@receiver g
-//	@return storages
 func (g Group) GetValidStorages() (storages []Storage) {
 
 	logger.Logger.Info(g.Storages)
@@ -50,10 +46,6 @@ func (g Group) GetValidStorages() (storages []Storage) {
 	return
 }
 
-// GetLongLivedStorage
-//
-//	@receiver g
-//	@return storage
 func (g Group) GetLongLivedStorage() (storage Storage) {
 	storage.UpdataTime = time.Now().Unix()
 	for _, v := range g.Storages {
@@ -64,18 +56,10 @@ func (g Group) GetLongLivedStorage() (storage Storage) {
 	return
 }
 
-// GetDB
-//
-//	@receiver d
-//	@return string
 func (d Group) GetDB() string {
 	return GroupDB
 }
 
-// GetID
-//
-//	@receiver d
-//	@return string
 func (d Group) GetID() string {
 	return d.Name
 }

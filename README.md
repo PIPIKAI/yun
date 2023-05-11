@@ -3,7 +3,7 @@
 [![Build Status](https://app.travis-ci.com/PIPIKAI/yun.svg?branch=main)](https://travis-ci.org//) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/pipikai/yun)
 ![GitHub release (latest by date)](https://img.shields.io/github/downloads/pipikai/yun/latest/total)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a8b52c71ed6c43b3866f8a59ef3b684d)](https://app.codacy.com/gh/PIPIKAI/yun/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a8b52c71ed6c43b3866f8a59ef3b684d)](https://app.codacy.com/gh/PIPIKAI/yun/dashboard?utm_source=gh\&utm_medium=referral\&utm_content=\&utm_campaign=Badge_grade)
 
 项目介绍
 
@@ -13,13 +13,13 @@
 
 这个项目是一个二进制可执行文件，不需要安装任何依赖项。只需要按照以下步骤进行即可：
 
- 1. 下载最新版本的可执行文件：
+1.  下载最新版本的可执行文件：
 
 ```bash
 wget https://github.com/PIPIKAI/yun/releases/latest/download/yun
 ```
 
- 2. 控制台中执行以下命令来启动客户端或存储端：
+2.  控制台中执行以下命令来启动客户端或存储端：
 
 启动客户端：
 
@@ -39,25 +39,21 @@ wget https://github.com/PIPIKAI/yun/releases/latest/download/yun
 
 启动客户端：
 
-```
-yun start --f "tracker"
-```
+    yun start --f "tracker"
 
 需要在配置文件中设置Name:Storage
 
 启动存储端：
 
-```
-yun start --f "storage"
-```
+    yun start --f "storage"
 
 贡献指南
 
 我们欢迎任何形式的贡献，包括但不限于：报告问题、提交bug修复、改进文档和代码等。如果您想做出贡献，请按照以下步骤进行：
 
- 1. Fork这个项目，并克隆到本地。
- 2. 在本地分支中进行修改。
- 3. 提交Pull Request，描述您的修改内容和用途。
+1.  Fork这个项目，并克隆到本地。
+2.  在本地分支中进行修改。
+3.  提交Pull Request，描述您的修改内容和用途。
 
 许可证信息
 
@@ -67,7 +63,7 @@ yun start --f "storage"
 
 如果您对这个项目有任何问题或建议，请通过以下方式联系我们：
 
-  - 发送邮件到 z1652091948@outlook.com
-  - 在GitHub上提交问题
+*   发送邮件到 z1652091948@outlook.com
+*   在GitHub上提交问题
 
 感谢您的使用和贡献！

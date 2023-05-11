@@ -22,42 +22,22 @@ type File struct {
 	CreatedTime int64  `json:"created_time"`
 }
 
-// GetPath
-//
-//	@receiver d
-//	@return string
 func (d File) GetPath() string {
 	return d.Path
 }
 
-// GetDB
-//
-//	@receiver d
-//	@return string
 func (d File) GetDB() string {
 	return StorageFileDb
 }
 
-// GetID
-//
-//	@receiver d
-//	@return string
 func (d File) GetID() string {
 	return d.GetMd5() + ";" + d.Storage.GetClientKey()
 }
 
-// GetMd5
-//
-//	@receiver d
-//	@return string
 func (d File) GetMd5() string {
 	return d.Md5
 }
 
-// GetName
-//
-//	@receiver d
-//	@return string
 func (d File) GetName() string {
 	return d.Name
 }

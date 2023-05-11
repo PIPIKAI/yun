@@ -6,3 +6,6 @@ bin
 db
 release
 *.sh
+node_modules
+package-lock.json
+package.json

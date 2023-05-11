@@ -33,34 +33,18 @@ func (d File) GetStatus() bool {
 	return true
 }
 
-// GetDB
-//
-//	@receiver d
-//	@return string
 func (d File) GetDB() string {
 	return StorageFileDb
 }
 
-// GetID
-//
-//	@receiver d
-//	@return string
 func (d File) GetID() string {
 	return d.ID
 }
 
-// GetMd5
-//
-//	@receiver d
-//	@return string
 func (d File) GetMd5() string {
 	return d.Md5
 }
 
-// GetName
-//
-//	@receiver d
-//	@return string
 func (d File) GetName() string {
 	return d.Name
 }
