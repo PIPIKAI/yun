@@ -51,6 +51,10 @@ wget https://github.com/PIPIKAI/yun/releases/latest/download/yun
     yun start --f "storage"
 ```
 
+整体架构：
+
+![架构图](./doc/%E6%9E%B6%E6%9E%84%E5%9B%BE.png)
+
 贡献指南
 
 我们欢迎任何形式的贡献，包括但不限于：报告问题、提交bug修复、改进文档和代码等。如果您想做出贡献，请按照以下步骤进行：
