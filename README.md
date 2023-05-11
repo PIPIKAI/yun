@@ -1,5 +1,6 @@
 # YUN
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3dcb24d68d5940f09346790b3daad0b6)](https://app.codacy.com/gh/PIPIKAI/yun?utm_source=github.com&utm_medium=referral&utm_content=PIPIKAI/yun&utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.org/pipikai/yun.svg?branch=master)](https://travis-ci.org//) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 项目介绍
