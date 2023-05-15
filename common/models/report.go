@@ -9,4 +9,5 @@ type Report struct {
 	Status   string `json:"status"`
 	Driver   string `json:"driver"`
 	Cap      int64  `json:"cap"`
+	NowTime  int64  `json:"now_time"`
 }

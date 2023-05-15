@@ -25,6 +25,7 @@ func HanldeStorageServerReport(c *gin.Context) {
 		DownloadAddr: req.IpAddr + req.HttpPort,
 		Cap:          req.Cap,
 		Status:       req.Status,
+		Delay:        time.Now().UnixMilli() - req.NowTime,
 		UpdataTime:   time.Now().Unix(),
 	}
 

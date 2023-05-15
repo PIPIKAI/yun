@@ -1,26 +1,25 @@
 # YUN
 
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/pipikai/yun/latest/total?style=flat-square)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/pipikai/yun?style=flat-square)
 ![GitHub](https://img.shields.io/github/license/pipikai/yun?style=flat-square)
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/pipikai/yun)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/pipikai/yun?style=flat-square)
 [![HitCount](https://hits.dwyl.com/pipikai/yun.svg?style=flat-square)](http://hits.dwyl.com/pipikai/yun)
 ![GitHub last commit](https://img.shields.io/github/last-commit/pipikai/yun?style=flat-square)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/a8b52c71ed6c43b3866f8a59ef3b684d)](https://app.codacy.com/gh/PIPIKAI/yun/dashboard?utm_source=gh\&utm_medium=referral\&utm_content=\&utm_campaign=Badge_grade?style=flat-square)
 ![GitHub Repo stars](https://img.shields.io/github/stars/pipikai/yun?style=social)
 
-项目介绍
+## 项目介绍
 
-这个项目是一个使用Golang语言实现的分布式文件存储系统，它具有高性能、可拓展、支持文件的秒传、断点续传、分片上传等特性。此外，该存储系统还支持大文件的上传，并通过embed集成了web界面，方便用户使用。
+这个项目是一个使用Golang语言实现的分布式文件存储系统，它具有跨平台、高可用、高性能、易拓展、支持文件的秒传、断点续传、分片上传等特性。此外，该存储系统还支持大文件的上传，并通过embed集成了web界面，方便用户使用。
 
-安装说明
+## 安装说明
 
 这个项目是一个二进制可执行文件，不需要安装任何依赖项。只需要按照以下步骤进行即可：
 
 1.  下载最新版本的可执行文件：
 
 ```bash
-wget https://github.com/PIPIKAI/yun/releases/latest/download/yun
+wget https://github.com/PIPIKAI/yun/releases/latest/download/yun-linux-amd64
 ```
 
 2.  控制台中执行以下命令来启动客户端或存储端：
@@ -37,29 +36,19 @@ wget https://github.com/PIPIKAI/yun/releases/latest/download/yun
 ./yun start --f "storage" 
 ```
 
-使用示例
+## 使用示例
 
 以下是一些使用示例，展示如何使用这个项目。
 
-启动客户端：
+上传文件
 
-```bash
-    yun start --f "tracker"
-```
+<!-- ToDo -->
 
-需要在配置文件中设置Name:Storage
-
-启动存储端：
-
-```bash
-    yun start --f "storage"
-```
-
-整体架构：
+## 整体架构：
 
 ![架构图](./doc/%E6%9E%B6%E6%9E%84%E5%9B%BE.png)
 
-贡献指南
+## 贡献指南
 
 我们欢迎任何形式的贡献，包括但不限于：报告问题、提交bug修复、改进文档和代码等。如果您想做出贡献，请按照以下步骤进行：
 
@@ -67,11 +56,11 @@ wget https://github.com/PIPIKAI/yun/releases/latest/download/yun
 2.  在本地分支中进行修改。
 3.  提交Pull Request，描述您的修改内容和用途。
 
-许可证信息
+## 许可证信息
 
 本项目基于MIT许可证开放源代码。
 
-联系方式
+## 联系方式
 
 如果您对这个项目有任何问题或建议，请通过以下方式联系我们：
 

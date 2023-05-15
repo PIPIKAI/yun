@@ -16,6 +16,7 @@ type Storage struct {
 	DownloadAddr string `json:"download_addr"`
 	Status       string `json:"status"`
 	Cap          int64  `json:"cap"`
+	Delay        int64  `json:"delay"`
 	UpdataTime   int64  `json:"updata_time"`
 }
 

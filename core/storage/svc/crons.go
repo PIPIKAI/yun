@@ -3,6 +3,7 @@ package svc
 
 import (
 	"context"
+	"time"
 
 	"github.com/pipikai/yun/common/logger"
 	"github.com/pipikai/yun/common/models"
@@ -21,6 +22,7 @@ func (s *Server) ReportStatus() {
 		Status:   "work",
 		Driver:   s.Config.DriverName,
 		Cap:      0,
+		NowTime:  time.Now().UnixMilli(),
 	}
 	data.Cap, _ = s.Driver.GetCap(context.Background())
 	for _, ip := range s.Config.Trackers {
