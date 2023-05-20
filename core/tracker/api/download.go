@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -12,6 +13,7 @@ import (
 	"github.com/pipikai/yun/common/logger"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/tracker/models"
+	"github.com/pipikai/yun/pb"
 )
 
 // download logic
@@ -34,34 +36,38 @@ func Download() gin.HandlerFunc {
 			util.Response.ResponsFmt(c, http.StatusNotFound, 404, nil, "File Not Found")
 			return
 		}
-		if fileinfo.Storage.Status != "work" {
-			util.Response.Error(c, nil, "Storage Not Working")
-			return
-		}
 
-		if fileinfo.Link.Header != nil {
-			c.Request.Header = fileinfo.Link.Header
-		}
-		remote, err := url.Parse("http://" + fileinfo.Storage.DownloadAddr + "/" + fileinfo.Link.Path)
-
+		groups, err := leveldb.GetOne[models.Group](fileinfo.Group)
 		if err != nil {
-			util.Response.Error(c, nil, err.Error())
+			util.Response.Error(c, nil, "DB err")
 			return
 		}
 
-		proxy := httputil.NewSingleHostReverseProxy(remote)
-		proxy.Director = func(req *http.Request) {
-			req.Header = c.Request.Header
-			req.Host = remote.Host
-			req.URL = remote
+		content := make([]byte, fileinfo.Size)
+		for idx := 0; idx < int(fileinfo.BlockSize); idx++ {
+			BytesChan := make(chan []byte, 1)
+
+			for _, storage := range groups.Storages {
+				go func(storage models.Storage) {
+					resp, err := Dial(storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
+						return client.Download(context.Background(), &pb.DownloadRequest{
+							Md5: fileinfo.BlockMd5[idx],
+						})
+					})
+					if err == nil {
+						BytesChan <- resp.(*pb.DownloadReply).Content
+					}
+				}(storage)
+
+			}
+			select {
+			case res := <-BytesChan:
+				content = append(content, res...)
+				break
+			}
 		}
-		proxy.ServeHTTP(c.Writer, c.Request)
 
-		// c.Request.URL.Path = string(link.GetPath())
-
-		// logger.Logger.Debug(c.Request)
-		// // group, err := ldb.GetGroup(g)
-		// HTTPProxy(c, "http", storage.ServerAddr)
+		c.Data(http.StatusOK, fileinfo.Type, content)
 	}
 }
 

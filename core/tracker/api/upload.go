@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -49,19 +50,45 @@ func Upload(c *gin.Context) {
 		return
 	}
 
-	//  client.upload()
-	rpc_res, err := Dial(fileinfo.Storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
-		return client.Upload(context.Background(), &pb.UploadRequest{
-			FileId:  fileinfo.Md5,
-			RawData: file_raw,
-			BlockId: int64(block_seq),
-		})
-	})
+	group, err := leveldb.GetOne[models.Group](fileinfo.Group)
 	if err != nil {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
-	res := rpc_res.(*pb.UploadReply)
+	upload_res := make(map[string]string)
+	uploaded_one := false
+	var wg sync.WaitGroup
+	for key, storage := range group.Storages {
+		if storage.Status != "ok" {
+			upload_res[key] = storage.Status
+			continue
+		}
+		wg.Add(1)
+		go func(key string) {
+			defer wg.Done()
+			err := util.Retry(3, func() error {
+				_, err := Dial(storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
+					return client.Upload(context.Background(), &pb.UploadRequest{
+						FileId:  fileinfo.ID,
+						RawData: file_raw,
+						BlockId: int64(block_seq),
+					})
+				})
+				return err
+			})
+			if err != nil {
+				upload_res[key] = err.Error()
+			} else {
+				uploaded_one = true
+				upload_res[key] = "ok"
+			}
+		}(key)
+	}
+	//  client.upload()
+	wg.Wait()
+	if !uploaded_one {
+		util.Response.Error(c, gin.H{"data": upload_res}, "error")
+	}
 
 	session.UpdataTime = time.Now().Unix()
 	session.AddPercent()
@@ -70,5 +97,5 @@ func Upload(c *gin.Context) {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
-	util.Response.Success(c, gin.H{"md5": res.Md5}, "success")
+	util.Response.Success(c, gin.H{}, "success")
 }

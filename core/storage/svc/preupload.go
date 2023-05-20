@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/pipikai/yun/common/leveldb"
-	common_models "github.com/pipikai/yun/common/models"
 	"github.com/pipikai/yun/core/storage/models"
 	"github.com/pipikai/yun/pb"
 )
@@ -19,7 +18,7 @@ import (
 func (s *Server) PreUpload(ctx context.Context, in *pb.PreUploadRequest) (*pb.PreUploadReply, error) {
 
 	v, err := leveldb.GetOne[models.File](in.Filemata.Md5)
-	file_meta := common_models.FileMeta{
+	file_meta := models.FileMeta{
 		Size:    in.Filemata.Size,
 		ModTime: in.Filemata.ModTime,
 		Md5:     in.Filemata.Md5,

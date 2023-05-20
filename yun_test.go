@@ -6,17 +6,12 @@ import (
 	"time"
 
 	"github.com/pipikai/yun/common/leveldb"
-	"github.com/pipikai/yun/common/models"
+	"github.com/pipikai/yun/core/tracker/models"
 )
 
 func TestUpdataOne(t *testing.T) {
-	err := leveldb.UpdataOne(models.FileInfo{
-		ID:      "testid",
-		Storage: "testStorage",
-		FileMeta: models.FileMeta{
-			Md5:  "testMd5",
-			Size: 123456,
-		},
+	err := leveldb.UpdataOne(models.File{
+		ID: "testid",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -24,7 +19,7 @@ func TestUpdataOne(t *testing.T) {
 }
 
 func TestGetOne(t *testing.T) {
-	v, err := leveldb.GetOne[models.FileInfo]("testid")
+	v, err := leveldb.GetOne[models.File]("testid")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -32,7 +27,7 @@ func TestGetOne(t *testing.T) {
 }
 
 func TestGetAll(t *testing.T) {
-	v, err := leveldb.GetAll[models.FileInfo]()
+	v, err := leveldb.GetAll[models.File]()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +36,7 @@ func TestGetAll(t *testing.T) {
 }
 
 func TestDeleteOne(t *testing.T) {
-	err := leveldb.DeleteOne[models.FileInfo]("testid")
+	err := leveldb.DeleteOne[models.File]("testid")
 	if err != nil {
 		t.Fatal(err)
 	}

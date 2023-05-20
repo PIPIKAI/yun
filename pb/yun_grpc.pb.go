@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.19.1
-// source: pb/yun.proto
+// source: yun.proto
 
 package pb
 
@@ -24,6 +24,7 @@ const (
 	Storage_Upload_FullMethodName    = "/pb.Storage/Upload"
 	Storage_Merge_FullMethodName     = "/pb.Storage/Merge"
 	Storage_Manage_FullMethodName    = "/pb.Storage/Manage"
+	Storage_Download_FullMethodName  = "/pb.Storage/Download"
 )
 
 // StorageClient is the client API for Storage service.
@@ -36,6 +37,7 @@ type StorageClient interface {
 	Upload(ctx context.Context, in *UploadRequest, opts ...grpc.CallOption) (*UploadReply, error)
 	Merge(ctx context.Context, in *MergeRequest, opts ...grpc.CallOption) (*MergeReply, error)
 	Manage(ctx context.Context, in *ManageRequest, opts ...grpc.CallOption) (*ManageReply, error)
+	Download(ctx context.Context, in *DownloadRequest, opts ...grpc.CallOption) (*DownloadReply, error)
 }
 
 type storageClient struct {
@@ -91,6 +93,15 @@ func (c *storageClient) Manage(ctx context.Context, in *ManageRequest, opts ...g
 	return out, nil
 }
 
+func (c *storageClient) Download(ctx context.Context, in *DownloadRequest, opts ...grpc.CallOption) (*DownloadReply, error) {
+	out := new(DownloadReply)
+	err := c.cc.Invoke(ctx, Storage_Download_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StorageServer is the server API for Storage service.
 // All implementations must embed UnimplementedStorageServer
 // for forward compatibility
@@ -101,6 +112,7 @@ type StorageServer interface {
 	Upload(context.Context, *UploadRequest) (*UploadReply, error)
 	Merge(context.Context, *MergeRequest) (*MergeReply, error)
 	Manage(context.Context, *ManageRequest) (*ManageReply, error)
+	Download(context.Context, *DownloadRequest) (*DownloadReply, error)
 	mustEmbedUnimplementedStorageServer()
 }
 
@@ -122,6 +134,9 @@ func (UnimplementedStorageServer) Merge(context.Context, *MergeRequest) (*MergeR
 }
 func (UnimplementedStorageServer) Manage(context.Context, *ManageRequest) (*ManageReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Manage not implemented")
+}
+func (UnimplementedStorageServer) Download(context.Context, *DownloadRequest) (*DownloadReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Download not implemented")
 }
 func (UnimplementedStorageServer) mustEmbedUnimplementedStorageServer() {}
 
@@ -226,6 +241,24 @@ func _Storage_Manage_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Storage_Download_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DownloadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageServer).Download(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Storage_Download_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageServer).Download(ctx, req.(*DownloadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Storage_ServiceDesc is the grpc.ServiceDesc for Storage service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -253,7 +286,11 @@ var Storage_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Manage",
 			Handler:    _Storage_Manage_Handler,
 		},
+		{
+			MethodName: "Download",
+			Handler:    _Storage_Download_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "pb/yun.proto",
+	Metadata: "yun.proto",
 }

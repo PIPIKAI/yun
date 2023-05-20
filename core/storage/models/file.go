@@ -2,9 +2,13 @@ package models
 
 import (
 	"strconv"
-
-	"github.com/pipikai/yun/common/models"
 )
+
+type FileMeta struct {
+	Size    int64  `json:"size"`
+	ModTime int64  `json:"modtime"`
+	Md5     string `json:"md5"`
+}
 
 // StorageFileDb
 const StorageFileDb = "storage_file_db"
@@ -12,7 +16,7 @@ const StorageFileDb = "storage_file_db"
 // File
 type File struct {
 	ID string
-	models.FileMeta
+	FileMeta
 	Name        string
 	Status      bool
 	Path        string

@@ -10,6 +10,6 @@ import (
 //	@param Md5
 //	@param blocksize
 //	@return string
-func GenBlockUid(Md5 string, blocksize int64) string {
-	return Md5 + strconv.Itoa(int(blocksize))
+func GenFileHash(Md5 string, blocksize int64) string {
+	return Md5 + "+" + strconv.Itoa(int(blocksize))
 }

@@ -2,17 +2,13 @@
 package api
 
 import (
-	"context"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pipikai/yun/common/leveldb"
-	"github.com/pipikai/yun/common/logger"
-	common_models "github.com/pipikai/yun/common/models"
+	"github.com/pipikai/yun/common/strategy"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/tracker/models"
-	"github.com/pipikai/yun/pb"
 )
 
 // BeforeUploadReq
@@ -32,9 +28,9 @@ type BeforeUploadReq struct {
 //	@param c
 func BeforeUpload(c *gin.Context) {
 	type Res struct {
-		SessionID   string `json:"session_id"`
-		Code        int    `json:"code"`
-		BlockStatus []bool `json:"blocks"`
+		SessionID string `json:"session_id"`
+		FileID    string `json:"File_id"`
+		Code      int    `json:"code"`
 	}
 	var req BeforeUploadReq
 
@@ -43,86 +39,68 @@ func BeforeUpload(c *gin.Context) {
 		return
 	}
 
-	// select gourp
-	group, err := leveldb.GetOne[models.Group](req.Group)
-	if err != nil {
-		util.Response.Error(c, nil, err.Error())
-		return
-	}
-	logger.Logger.Info(group)
-
-	storage, err := SelectStorage(c, group)
-	if err != nil {
-		util.Response.Error(c, nil, err.Error())
-		return
-	}
-
-	if storage.Cap < req.Size {
-		util.Response.Error(c, nil, "rest cap is less than free ")
-		return
-	}
-
-	newFileinfo := &models.File{
-		FileMeta: common_models.FileMeta{
-			Size:    req.Size,
-			ModTime: req.ModTime,
-			Md5:     req.Md5,
-		},
-		Storage:     *storage,
-		Name:        req.Filename,
-		Status:      0,
-		CreatedTime: time.Now().Unix(),
-	}
-
-	res := &Res{
-		BlockStatus: make([]bool, 0),
-	}
+	fileId := strategy.Fid.GenFID()
+	filehashid := strategy.GenFileHash(req.Md5, req.Size)
 	session := &models.UploadSession{
-		ID:          strconv.Itoa(int(time.Now().Unix())),
-		FileID:      newFileinfo.GetID(),
+		ID:          fileId,
+		FileID:      fileId + util.Md5hex(req.Filename),
 		CreatedTime: time.Now().Unix(),
+		UpdataTime:  time.Now().Unix(),
 		Status:      "上传中",
 		Percent:     0,
 		BlockSize:   req.BlockSize,
 	}
-
-	// 秒传
-	irpc_res, err := Dial(storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
-		return client.PreUpload(context.Background(), &pb.PreUploadRequest{
-			SessionId: session.ID,
-			Filemata: &pb.FileMeta{
-				Size:    req.Size,
-				Name:    req.Filename,
-				ModTime: req.ModTime,
-				Md5:     req.Md5,
-			},
-			BlockMd5: req.BlockMd5,
-		})
-	})
-	if err != nil {
-		util.Response.Error(c, nil, "rpc PreUpload error")
+	// defer leveldb.UpdataOne(session)
+	// 检测是否可以秒传
+	v, err := leveldb.GetOne[models.FileHash](filehashid)
+	if err == nil {
+		if v.Ok {
+			session.Status = "秒传成功"
+			session.Percent = 100
+			leveldb.UpdataOne(session)
+			util.Response.Success(c, gin.H{
+				"data": Res{
+					Code:      2,
+					SessionID: session.ID,
+					FileID:    v.FID,
+				},
+			}, "秒传成功")
+		} else {
+			util.Response.Error(c, nil, "相同文件已在上传")
+		}
 		return
 	}
-	rpc_res := irpc_res.(*pb.PreUploadReply)
-	if rpc_res.Code == 2 {
-		session.Status = "秒传成功"
-		session.Percent = 100
-	}
-	res.Code = int(rpc_res.Code)
-	res.BlockStatus = rpc_res.Blockstatus
-	res.SessionID = session.ID
 
-	if of, err := leveldb.GetOne[models.File](newFileinfo.GetID()); err != nil {
-		err = leveldb.UpdataOne(newFileinfo)
-		if err != nil {
-			util.Response.Error(c, nil, err.Error())
-			return
-		}
-	} else {
-		if of.Name == req.Filename {
-			util.Response.Error(c, nil, "相同的文件已存在")
-			return
-		}
+	err = leveldb.UpdataOne(models.FileHash{
+		ID:  filehashid,
+		FID: fileId + util.Md5hex(req.Filename),
+		Ok:  false,
+	})
+	if err != nil {
+		util.Response.Error(c, nil, err.Error())
+		return
+	}
+
+	newFileinfo := &models.File{
+		ID: session.FileID,
+		FileMeta: models.FileMeta{
+			Size:    req.Size,
+			ModTime: req.ModTime,
+			Md5:     req.Md5,
+			Type:    req.Type,
+		},
+		Group:      req.Group,
+		Name:       req.Filename,
+		BlockSize:  req.BlockSize,
+		BlockMd5:   req.BlockMd5,
+		Status:     0,
+		UpdataTime: time.Now().Unix(),
+	}
+
+	err = leveldb.UpdataOne(newFileinfo)
+	if err != nil {
+		util.Response.Error(c, nil, err.Error())
+		return
 	}
 
 	err = leveldb.UpdataOne(session)
@@ -131,6 +109,6 @@ func BeforeUpload(c *gin.Context) {
 		return
 	}
 
-	util.Response.Success(c, gin.H{"data": res}, "before upload")
+	util.Response.Success(c, gin.H{"data": session}, "ok")
 
 }

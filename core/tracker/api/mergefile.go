@@ -1,13 +1,10 @@
 package api
 
 import (
-	"context"
-
 	"github.com/gin-gonic/gin"
 	"github.com/pipikai/yun/common/leveldb"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/tracker/models"
-	"github.com/pipikai/yun/pb"
 )
 
 // MergeReq
@@ -41,13 +38,13 @@ func Merge(c *gin.Context) {
 	}
 
 	//  client.upload()
-	rpc_res, err := Dial(fileinfo.Storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
+	// rpc_res, err := Dial(fileinfo.Storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
 
-		return client.Merge(context.Background(), &pb.MergeRequest{
-			Md5:       fileinfo.Md5,
-			BlockSize: req.BlockSize,
-		})
-	})
+	// 	return client.Merge(context.Background(), &pb.MergeRequest{
+	// 		Md5:       fileinfo.Md5,
+	// 		BlockSize: req.BlockSize,
+	// 	})
+	// })
 
 	if err != nil {
 		util.Response.Error(c, nil, err.Error())
@@ -61,11 +58,11 @@ func Merge(c *gin.Context) {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
-	res := rpc_res.(*pb.MergeReply)
-	fileinfo.ID = fileinfo.GetID()
-	fileinfo.Link = &models.Link{
-		Path: res.Path,
-	}
+	// res := rpc_res.(*pb.MergeReply)
+	// fileinfo.ID = fileinfo.GetID()
+	// fileinfo.Link = &models.Link{
+	// 	Path: res.Path,
+	// }
 	fileinfo.Status = 1
 	err = leveldb.UpdataOne(fileinfo)
 	if err != nil {

@@ -11,6 +11,15 @@ service Storage {
   rpc Upload (UploadRequest) returns (UploadReply) {}
   rpc Merge (MergeRequest) returns (MergeReply) {}
   rpc Manage (ManageRequest) returns (ManageReply) {}
+  rpc Download (DownloadRequest) returns (DownloadReply) {}
+}
+
+message DownloadRequest {
+  string md5 = 1;
+}
+
+message DownloadReply {
+  bytes content = 1;
 }
 
 // The request message containing the user's name.

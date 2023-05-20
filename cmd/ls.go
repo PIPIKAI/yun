@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/pipikai/yun/common/leveldb"
-	"github.com/pipikai/yun/common/models"
+	"github.com/pipikai/yun/core/tracker/models"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +18,7 @@ var lsCmd = &cobra.Command{
 }
 
 func ls() {
-	res, err := leveldb.GetAll[models.FileInfo]()
+	res, err := leveldb.GetAll[models.File]()
 	if err != nil {
 		fmt.Println("err :", err)
 		return
