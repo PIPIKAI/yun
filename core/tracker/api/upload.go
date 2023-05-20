@@ -64,7 +64,7 @@ func Upload(c *gin.Context) {
 			continue
 		}
 		wg.Add(1)
-		go func(key string) {
+		go func(storage models.Storage, key string) {
 			defer wg.Done()
 			err := util.Retry(3, func() error {
 				_, err := Dial(storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
@@ -82,7 +82,7 @@ func Upload(c *gin.Context) {
 				uploaded_one = true
 				upload_res[key] = "ok"
 			}
-		}(key)
+		}(storage, key)
 	}
 	//  client.upload()
 	wg.Wait()

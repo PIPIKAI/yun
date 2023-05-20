@@ -46,27 +46,30 @@ func Download() gin.HandlerFunc {
 		content := make([]byte, fileinfo.Size)
 		for idx := 0; idx < int(fileinfo.BlockSize); idx++ {
 			BytesChan := make(chan []byte, 1)
-
+			storageCtx, cancel := context.WithCancel(context.Background())
+			// 当第一个协程完成传输，调用cancel
+			defer cancel()
+			// 使用协程对每一个在工作中的存储服务器进行下载，保证下载速度
 			for _, storage := range groups.Storages {
-				go func(storage models.Storage) {
+				if storage.Status != "ok" {
+					continue
+				}
+				go func(storageCtx context.Context, storage models.Storage) {
 					resp, err := Dial(storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
-						return client.Download(context.Background(), &pb.DownloadRequest{
+						return client.Download(storageCtx, &pb.DownloadRequest{
 							Md5: fileinfo.BlockMd5[idx],
 						})
 					})
-					if err == nil {
+					if err == nil && resp != nil {
 						BytesChan <- resp.(*pb.DownloadReply).Content
 					}
-				}(storage)
+				}(storageCtx, storage)
 
 			}
-			select {
-			case res := <-BytesChan:
-				content = append(content, res...)
-				break
-			}
+			// 等待第一个完成传输的storage
+			content = append(content, <-BytesChan...)
+			close(BytesChan)
 		}
-
 		c.Data(http.StatusOK, fileinfo.Type, content)
 	}
 }
