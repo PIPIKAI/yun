@@ -58,11 +58,7 @@ func Merge(c *gin.Context) {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
-	// res := rpc_res.(*pb.MergeReply)
-	// fileinfo.ID = fileinfo.GetID()
-	// fileinfo.Link = &models.Link{
-	// 	Path: res.Path,
-	// }
+
 	fileinfo.Status = 1
 	err = leveldb.UpdataOne(fileinfo)
 	if err != nil {

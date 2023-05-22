@@ -30,34 +30,23 @@ func ReUploadSession(c *gin.Context) {
 		return
 	}
 
-	// fileinfo, err := leveldb.GetOne[models.File](session.FileID)
+	fileinfo, err := leveldb.GetOne[models.File](session.FileID)
 	if err != nil {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
-	// 秒传
-	// irpc_res, err := Dial(fileinfo.Storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
-	// 	return client.PreUpload(context.Background(), &pb.PreUploadRequest{
-	// 		SessionId: session.ID,
-	// 		Filemata: &pb.FileMeta{
-	// 			Size:    fileinfo.Size,
-	// 			Name:    fileinfo.Name,
-	// 			ModTime: fileinfo.ModTime,
-	// 			Md5:     fileinfo.Md5,
-	// 		},
-	// 		BlockMd5: req.BlockMd5s,
-	// 	})
-	// })
-	if err != nil {
-		util.Response.Error(c, nil, "rpc PreUpload error")
+	if fileinfo.BlockSize != int64(len(req.BlockMd5s)) {
+		util.Response.Error(c, nil, "文件错误")
 		return
 	}
-	// rpc_res := irpc_res.(*pb.PreUploadReply)
-	// logger.Logger.Debug(rpc_res)
+	for i := 0; i < int(fileinfo.BlockSize); i++ {
+		if fileinfo.BlockMd5[i] != req.BlockMd5s[i] {
+			util.Response.Error(c, nil, "文件错误")
+			return
+		}
+	}
 	session.Status = "上传中"
 	session.UpdataTime = time.Now().Unix()
-
-	// session.UpdataPercent(rpc_res.Blockstatus)
 
 	err = leveldb.UpdataOne(session)
 
@@ -65,5 +54,5 @@ func ReUploadSession(c *gin.Context) {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
-	// util.Response.Success(c, gin.H{"data": rpc_res.Blockstatus}, "ok")
+	util.Response.Success(c, nil, "success")
 }

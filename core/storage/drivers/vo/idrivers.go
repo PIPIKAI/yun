@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/pipikai/yun/core/storage/models"
 	"github.com/pipikai/yun/pb"
 )
 
@@ -35,9 +34,8 @@ type Readder interface {
 
 // Writter
 type Writter interface {
-	PreUpload(context.Context, *pb.PreUploadRequest) (*pb.PreUploadReply, error)
 	Upload(context.Context, *pb.UploadRequest) (*pb.UploadReply, error)
-	CreateFile(context.Context, *models.File) (*pb.MergeReply, error)
+	Download(context.Context, *pb.DownloadRequest) (*pb.DownloadReply, error)
 	Remove(context.Context, IDir) error
 }
 

@@ -19,12 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Storage_HeartBeat_FullMethodName = "/pb.Storage/HeartBeat"
-	Storage_PreUpload_FullMethodName = "/pb.Storage/PreUpload"
-	Storage_Upload_FullMethodName    = "/pb.Storage/Upload"
-	Storage_Merge_FullMethodName     = "/pb.Storage/Merge"
-	Storage_Manage_FullMethodName    = "/pb.Storage/Manage"
-	Storage_Download_FullMethodName  = "/pb.Storage/Download"
+	Storage_Upload_FullMethodName   = "/pb.Storage/Upload"
+	Storage_Manage_FullMethodName   = "/pb.Storage/Manage"
+	Storage_Download_FullMethodName = "/pb.Storage/Download"
 )
 
 // StorageClient is the client API for Storage service.
@@ -32,10 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type StorageClient interface {
 	// Sends a greeting
-	HeartBeat(ctx context.Context, in *HeartBeatRequest, opts ...grpc.CallOption) (*HeartBeatReply, error)
-	PreUpload(ctx context.Context, in *PreUploadRequest, opts ...grpc.CallOption) (*PreUploadReply, error)
 	Upload(ctx context.Context, in *UploadRequest, opts ...grpc.CallOption) (*UploadReply, error)
-	Merge(ctx context.Context, in *MergeRequest, opts ...grpc.CallOption) (*MergeReply, error)
 	Manage(ctx context.Context, in *ManageRequest, opts ...grpc.CallOption) (*ManageReply, error)
 	Download(ctx context.Context, in *DownloadRequest, opts ...grpc.CallOption) (*DownloadReply, error)
 }
@@ -48,36 +42,9 @@ func NewStorageClient(cc grpc.ClientConnInterface) StorageClient {
 	return &storageClient{cc}
 }
 
-func (c *storageClient) HeartBeat(ctx context.Context, in *HeartBeatRequest, opts ...grpc.CallOption) (*HeartBeatReply, error) {
-	out := new(HeartBeatReply)
-	err := c.cc.Invoke(ctx, Storage_HeartBeat_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *storageClient) PreUpload(ctx context.Context, in *PreUploadRequest, opts ...grpc.CallOption) (*PreUploadReply, error) {
-	out := new(PreUploadReply)
-	err := c.cc.Invoke(ctx, Storage_PreUpload_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *storageClient) Upload(ctx context.Context, in *UploadRequest, opts ...grpc.CallOption) (*UploadReply, error) {
 	out := new(UploadReply)
 	err := c.cc.Invoke(ctx, Storage_Upload_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *storageClient) Merge(ctx context.Context, in *MergeRequest, opts ...grpc.CallOption) (*MergeReply, error) {
-	out := new(MergeReply)
-	err := c.cc.Invoke(ctx, Storage_Merge_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -107,10 +74,7 @@ func (c *storageClient) Download(ctx context.Context, in *DownloadRequest, opts 
 // for forward compatibility
 type StorageServer interface {
 	// Sends a greeting
-	HeartBeat(context.Context, *HeartBeatRequest) (*HeartBeatReply, error)
-	PreUpload(context.Context, *PreUploadRequest) (*PreUploadReply, error)
 	Upload(context.Context, *UploadRequest) (*UploadReply, error)
-	Merge(context.Context, *MergeRequest) (*MergeReply, error)
 	Manage(context.Context, *ManageRequest) (*ManageReply, error)
 	Download(context.Context, *DownloadRequest) (*DownloadReply, error)
 	mustEmbedUnimplementedStorageServer()
@@ -120,17 +84,8 @@ type StorageServer interface {
 type UnimplementedStorageServer struct {
 }
 
-func (UnimplementedStorageServer) HeartBeat(context.Context, *HeartBeatRequest) (*HeartBeatReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method HeartBeat not implemented")
-}
-func (UnimplementedStorageServer) PreUpload(context.Context, *PreUploadRequest) (*PreUploadReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PreUpload not implemented")
-}
 func (UnimplementedStorageServer) Upload(context.Context, *UploadRequest) (*UploadReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Upload not implemented")
-}
-func (UnimplementedStorageServer) Merge(context.Context, *MergeRequest) (*MergeReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Merge not implemented")
 }
 func (UnimplementedStorageServer) Manage(context.Context, *ManageRequest) (*ManageReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Manage not implemented")
@@ -151,42 +106,6 @@ func RegisterStorageServer(s grpc.ServiceRegistrar, srv StorageServer) {
 	s.RegisterService(&Storage_ServiceDesc, srv)
 }
 
-func _Storage_HeartBeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HeartBeatRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StorageServer).HeartBeat(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Storage_HeartBeat_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StorageServer).HeartBeat(ctx, req.(*HeartBeatRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Storage_PreUpload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PreUploadRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StorageServer).PreUpload(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Storage_PreUpload_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StorageServer).PreUpload(ctx, req.(*PreUploadRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Storage_Upload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UploadRequest)
 	if err := dec(in); err != nil {
@@ -201,24 +120,6 @@ func _Storage_Upload_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StorageServer).Upload(ctx, req.(*UploadRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Storage_Merge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MergeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StorageServer).Merge(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Storage_Merge_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StorageServer).Merge(ctx, req.(*MergeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -267,20 +168,8 @@ var Storage_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*StorageServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "HeartBeat",
-			Handler:    _Storage_HeartBeat_Handler,
-		},
-		{
-			MethodName: "PreUpload",
-			Handler:    _Storage_PreUpload_Handler,
-		},
-		{
 			MethodName: "Upload",
 			Handler:    _Storage_Upload_Handler,
-		},
-		{
-			MethodName: "Merge",
-			Handler:    _Storage_Merge_Handler,
 		},
 		{
 			MethodName: "Manage",

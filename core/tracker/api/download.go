@@ -42,7 +42,7 @@ func Download() gin.HandlerFunc {
 			util.Response.Error(c, nil, "DB err")
 			return
 		}
-
+		logger.Logger.Info(fileinfo, groups)
 		content := make([]byte, fileinfo.Size)
 		for idx := 0; idx < int(fileinfo.BlockSize); idx++ {
 			BytesChan := make(chan []byte, 1)
