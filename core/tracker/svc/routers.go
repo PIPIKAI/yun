@@ -16,9 +16,8 @@ func Router(g *gin.Engine) *gin.Engine {
 		rg.POST("/beforupload", api.BeforeUpload)
 		rg.POST("/reupload", api.ReUploadSession)
 		rg.POST("/upload", api.Upload)
-		rg.POST("/merge", api.Merge)
+		rg.POST("/create", api.Create)
 	}
-
 	g.POST("/report-status", api.HanldeStorageServerReport)
 	return g
 }

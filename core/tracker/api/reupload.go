@@ -54,5 +54,14 @@ func ReUploadSession(c *gin.Context) {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
-	util.Response.Success(c, nil, "success")
+	block_status := make([]bool, 0)
+	for _, v := range req.BlockMd5s {
+		sor, err := leveldb.GetOne[models.BlockStorage](v)
+		if err == nil && len(sor.Mark) > 0 {
+			block_status = append(block_status, false)
+		} else {
+			block_status = append(block_status, true)
+		}
+	}
+	util.Response.Success(c, gin.H{"block_status": block_status}, "success")
 }

@@ -1,5 +1,9 @@
 package models
 
+import (
+	"github.com/pipikai/yun/common/leveldb"
+)
+
 // k : block md5 , v :
 var UploadSessionDB = "upload_session_db"
 
@@ -10,8 +14,8 @@ type UploadSession struct {
 	CreatedTime int64   `json:"cteated_time"`
 	UpdataTime  int64   `json:"update_time"`
 	Status      string  `json:"status"`
-	Percent     float32 `json:"percent"`
 	BlockSize   int64   `json:"block_size"`
+	Percent     float32 `json:"percent"`
 }
 
 func (u *UploadSession) GetStatus() string {
@@ -26,17 +30,17 @@ func (d UploadSession) GetID() string {
 	return d.ID
 }
 
-func (u *UploadSession) UpdataPercent(blockStatus []bool) {
-	cnt := 0
-	for _, v := range blockStatus {
-		if v {
-			cnt = cnt + 1
+func (u *UploadSession) GetPercent() (float32, error) {
+	fileinfo, err := leveldb.GetOne[File](u.FileID)
+	if err != nil {
+		return 0, err
+	}
+	ok := 0
+	for _, md5 := range fileinfo.BlockMd5 {
+		v, err := leveldb.GetOne[BlockStorage](md5)
+		if err == nil && len(v.Mark) > 0 {
+			ok++
 		}
 	}
-	u.Percent = 100.0 * float32(cnt) / float32(len(blockStatus))
-}
-
-func (u *UploadSession) AddPercent() {
-	u.Percent = u.Percent + 100*(1.0/float32(u.BlockSize))
-
+	return 100.0 * float32(ok) / float32(u.BlockSize), nil
 }

@@ -8,12 +8,9 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"time"
 
-	"github.com/pipikai/yun/common/leveldb"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/storage/drivers/vo"
-	"github.com/pipikai/yun/core/storage/models"
 	"github.com/pipikai/yun/pb"
 	"github.com/shirou/gopsutil/disk"
 )
@@ -79,26 +76,24 @@ func (d *Local) Init(ctx context.Context) error {
 	return nil
 }
 
-// func (d *Local) Upload(ctx context.Context, file vo.IStreamFile) (vo.FileMete, error) {
+func (d *Local) Upload(ctx context.Context, file *pb.UploadRequest) (*pb.UploadReply, error) {
 
-// 	path := "/" + path.Ext(file.GetName()) + "/" + util.GetYMDStylePath() + "/"
+	fileName := "/" + file.Md5
 
-// 	if err := os.MkdirAll(d.RootPath+path, fs.FileMode(mkdirPerm)); err != nil {
-// 		return nil, err
-// 	}
-// 	f, err := os.OpenFile(d.RootPath+path+util.GetUnixString()+"-"+file.GetName(), os.O_CREATE|os.O_RDWR, fs.FileMode(mkdirPerm))
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	_, err = f.Write(file.GetContent())
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return base.BlockInfo{
-// 		Scheme: "http",
-// 		Path:   path + util.GetUnixString() + "-" + file.GetName(),
-// 	}, nil
-// }
+	// if err := os.MkdirAll(d.RootPath+fileName, fs.FileMode(mkdirPerm)); err != nil {
+	// 	return nil, err
+	// }
+	f, err := os.OpenFile(d.RootPath+fileName, os.O_CREATE|os.O_RDWR, fs.FileMode(mkdirPerm))
+	if err != nil {
+		return nil, err
+	}
+	_, err = f.Write(file.RawData)
+	f.Close()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.UploadReply{Md5: file.Md5, Code: 1}, nil
+}
 
 // PreUpload(context.Context, *pb.PreUploadRequest) (*pb.PreUploadReply, error)
 // Upload(context.Context, *pb.UploadRequest) (*pb.UploadReply, error)
@@ -111,37 +106,37 @@ func (d *Local) Init(ctx context.Context) error {
 //	@param file
 //	@return *pb.UploadReply
 //	@return error
-func (d *Local) Upload(ctx context.Context, file *pb.UploadRequest) (*pb.UploadReply, error) {
-	res := &pb.UploadReply{
-		Code: 1,
-		Md5:  file.Md5,
-	}
-	_, err := leveldb.GetOne[models.Block](file.Md5)
-	if err == nil {
-		res.Code = 2
-		return res, nil
-	}
-	err = leveldb.UpdataOne(models.Block{
-		ID:          file.Md5,
-		Md5:         file.Md5,
-		CreatedTime: time.Now(),
-		Size:        int64(len(file.RawData)),
-		Content:     file.RawData,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
-}
+// func (d *Local) Upload(ctx context.Context, file *pb.UploadRequest) (*pb.UploadReply, error) {
+// 	res := &pb.UploadReply{
+// 		Code: 1,
+// 		Md5:  file.Md5,
+// 	}
+// 	_, err := leveldb.GetOne[models.Block](file.Md5)
+// 	if err == nil {
+// 		res.Code = 2
+// 		return res, nil
+// 	}
+// 	err = leveldb.UpdataOne(models.Block{
+// 		ID:          file.Md5,
+// 		Md5:         file.Md5,
+// 		CreatedTime: time.Now(),
+// 		Size:        int64(len(file.RawData)),
+// 		Content:     file.RawData,
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return res, nil
+// }
 
 func (d *Local) Download(ctx context.Context, req *pb.DownloadRequest) (*pb.DownloadReply, error) {
 	// 获取文件锁
-	res, err := leveldb.GetOne[models.Block](req.Md5)
+	res, err := os.ReadFile(d.RootPath + "/" + req.Md5)
 	if err != nil {
 		return nil, err
 	}
 	return &pb.DownloadReply{
-		Content: res.Content,
+		Content: res,
 	}, nil
 }
 

@@ -21,7 +21,7 @@ import (
 // get Link , gen token -> save db token:Link , token:FileInfo
 //
 //	@param c
-var sl sync.RWMutex
+var lk sync.RWMutex
 
 func Upload(c *gin.Context) {
 	// 获取请求数据
@@ -69,13 +69,12 @@ func Upload(c *gin.Context) {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
-	upload_res := make(map[string]string)
-	uploaded_one := false
+	upload_mark := make([]models.Storage, 0)
 	var wg sync.WaitGroup
 	// 发送数据到存储服务器
+	errChan := make(chan error)
 	for key, storage := range group.Storages {
 		if storage.Status != "work" {
-			upload_res[key] = storage.Status
 			continue
 		}
 		wg.Add(1)
@@ -90,38 +89,32 @@ func Upload(c *gin.Context) {
 				})
 				return err
 			})
-			if err != nil {
-				upload_res[key] = err.Error()
+			if err == nil {
+				lk.Lock()
+				upload_mark = append(upload_mark, storage)
+				lk.Unlock()
 			} else {
-				uploaded_one = true
-				upload_res[key] = "ok"
+				errChan <- err
 			}
 		}(storage, key)
 	}
-	//  client.upload()
 	wg.Wait()
 	// 至少上传一个成功
-	if !uploaded_one {
-		util.Response.Error(c, gin.H{"data": upload_res}, "error")
-	}
-
-	sl.Lock()
-	session, err = leveldb.GetOne[models.UploadSession](session_id)
-	if err != nil {
-		util.Response.Error(c, nil, "No found Session")
+	if len(upload_mark) == 0 {
+		util.Response.Error(c, nil, ":upload 101 error")
 		return
 	}
+	// 更新block status
+	leveldb.UpdataOne(&models.BlockStorage{
+		ID:   raw_md5,
+		Mark: upload_mark,
+	})
 
 	session.UpdataTime = time.Now().Unix()
-	session.AddPercent()
-	if session.Percent >= 100 {
-		session.Status = "上传成功"
-	}
 	err = leveldb.UpdataOne(session)
 	if err != nil {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
-	sl.Unlock()
-	util.Response.Success(c, gin.H{}, "success")
+	util.Response.Success(c, gin.H{"data": upload_mark}, "success")
 }

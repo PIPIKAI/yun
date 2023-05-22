@@ -28,6 +28,8 @@ func getSession(conditon func(Res) bool) ([]Res, error) {
 		if err != nil {
 			return nil, err
 		}
+		p, _ := v.GetPercent()
+		v.Percent = p
 		element := Res{
 			Session:  v,
 			FileInfo: *fi,

@@ -47,7 +47,6 @@ func BeforeUpload(c *gin.Context) {
 		CreatedTime: time.Now().Unix(),
 		UpdataTime:  time.Now().Unix(),
 		Status:      "上传中",
-		Percent:     0,
 		BlockSize:   req.BlockSize,
 	}
 	// defer leveldb.UpdataOne(session)
@@ -56,7 +55,6 @@ func BeforeUpload(c *gin.Context) {
 	if err == nil {
 		if v.Ok {
 			session.Status = "秒传成功"
-			session.Percent = 100
 			leveldb.UpdataOne(session)
 			util.Response.Success(c, gin.H{
 				"data": Res{
@@ -109,6 +107,15 @@ func BeforeUpload(c *gin.Context) {
 		return
 	}
 
-	util.Response.Success(c, gin.H{"data": session}, "ok")
+	block_status := make([]bool, 0)
+	for _, v := range req.BlockMd5 {
+		sor, err := leveldb.GetOne[models.BlockStorage](v)
+		if err == nil && len(sor.Mark) > 0 {
+			block_status = append(block_status, false)
+		} else {
+			block_status = append(block_status, true)
+		}
+	}
+	util.Response.Success(c, gin.H{"session": session, "block_status": block_status}, "ok")
 
 }
