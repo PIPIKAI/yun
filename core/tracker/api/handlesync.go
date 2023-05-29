@@ -16,26 +16,36 @@ import (
 var reportlk sync.RWMutex
 
 func HandleSync(c *gin.Context) {
-	var req common_models.SyncReport
-	err := c.ShouldBind(&req)
+	var data common_models.SyncReport
+	err := c.ShouldBind(&data)
 	if err != nil {
 		logger.Logger.Error(err)
 		return
 	}
+	logger.Logger.Info(data)
+	syncSessionLk.Lock()
+	sesssion, err := leveldb.GetOne[models.SyncSession](data.SessionID)
+	syncSessionLk.Unlock()
 
-	sesssion, err := leveldb.GetOne[models.SyncSession](req.SessionID)
 	if err != nil {
 		logger.Logger.Error(err)
 		return
 	}
-
+	succed := 0
 	for idx, dst := range sesssion.Dst {
-		for _, reqStatus := range req.SyncDetails {
+		for _, reqStatus := range data.SyncDetails {
 			if dst.Storage.ServerAddr == reqStatus.ServerAddr {
-				sesssion.Dst[idx].Percent = reqStatus.Percent
-				sesssion.Dst[idx].Status = reqStatus.Status
+				fileinfo, _ := leveldb.GetOne[models.File](sesssion.FID)
+				if int(fileinfo.BlockSize) <= reqStatus.Percent {
+					reqStatus.Percent = 100
+					sesssion.Dst[idx].Status = "同步完成"
+					succed++
+				}
 			}
 		}
+	}
+	if succed == len(sesssion.Dst) {
+		sesssion.Status = "同步完成"
 	}
 	sesssion.UpdataAt = time.Now().Unix()
 	reportlk.Lock()

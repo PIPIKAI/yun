@@ -38,12 +38,13 @@ func (s *Server) BeginSync(sessions *models.SyncReport) {
 				sessions.SyncDetails[idx].Status = "正在上传"
 				sessions.SyncDetails[idx].Percent++
 			}
-			syncLock.Lock()
-			leveldb.UpdataOne(sessions)
-			ReportSyncQueue = append(ReportSyncQueue, *sessions)
-			syncLock.Unlock()
+
 		}
 	}
+	syncLock.Lock()
+	leveldb.UpdataOne(sessions)
+	ReportSyncQueue = append(ReportSyncQueue, *sessions)
+	syncLock.Unlock()
 
 }
 func (s *Server) Sync(ctx context.Context, in *pb.SyncRequest) (*pb.SyncReply, error) {

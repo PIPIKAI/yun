@@ -97,7 +97,7 @@ func (g Group) GetSyncStorages(master *Storage) []Storage {
 	res := make([]Storage, 0)
 	var tp Storage
 	nowCap := int64(0)
-	storages := g.GetValidStorages()
+	storages := g.Storages
 	if len(storages) == 0 {
 		return nil
 	}

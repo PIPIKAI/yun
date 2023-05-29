@@ -1,10 +1,12 @@
 package api
 
 import (
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pipikai/yun/common/leveldb"
+	"github.com/pipikai/yun/common/logger"
 	"github.com/pipikai/yun/common/util"
 	"github.com/pipikai/yun/core/tracker/models"
 	"github.com/spf13/viper"
@@ -20,6 +22,8 @@ type CreateReq struct {
 // Create
 //
 //	@param c
+
+var syncSessionLk sync.RWMutex
 
 func Create(c *gin.Context) {
 
@@ -84,7 +88,10 @@ func Create(c *gin.Context) {
 		return
 	}
 	targets := group.GetSyncStorages(fileinfo.Storage)
-
+	if targets == nil || len(targets) <= 0 {
+		logger.Logger.Warn("No Valid Sync Storages")
+		return
+	}
 	dst := make([]models.SyncDst, 0)
 	for _, t := range targets {
 		dst = append(dst, models.SyncDst{
@@ -111,12 +118,14 @@ func Create(c *gin.Context) {
 		syncSession.BeginAt = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location()).AddDate(0, 0, 1).Unix()
 	}
 	syncSession.BeginAt = syncSession.CreatedAt
+	syncSessionLk.Lock()
+	defer syncSessionLk.Unlock()
 
 	err = leveldb.UpdataOne(syncSession)
 	if err != nil {
 		util.Response.Error(c, nil, "Sync Err: "+err.Error())
 		return
 	}
-	util.Response.Success(c, nil, "同步队列加入成功")
+	// util.Response.Success(c, nil, "同步队列加入成功")
 
 }

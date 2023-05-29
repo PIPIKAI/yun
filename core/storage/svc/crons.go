@@ -24,7 +24,7 @@ func (s *Server) ReportStatus() {
 		Status:   "work",
 		Driver:   s.Config.DriverName,
 		Cap:      0,
-		NowTime:  time.Now().UnixMilli(),
+		NowTime:  time.Now().UTC().UnixMilli(),
 	}
 	data.Cap, _ = s.Driver.GetCap(context.Background())
 	for _, ip := range s.Config.Trackers {
@@ -32,8 +32,12 @@ func (s *Server) ReportStatus() {
 			logger.Logger.Warnf("Report Err :%s ", string(ip))
 		}
 		if len(ReportSyncQueue) != 0 {
-			if _, err := util.PostJSON(ip+"/report-sync", ReportSyncQueue, nil); err != nil {
-				logger.Logger.Warnf("Report Err :%s ", string(ip))
+			for _, syncsession := range ReportSyncQueue {
+				logger.Logger.Info("syncsession : %v ", syncsession)
+
+				if _, err := util.PostJSON(ip+"/report-sync", syncsession, nil); err != nil {
+					logger.Logger.Warnf("Report Err :%s ", string(ip))
+				}
 			}
 			syncLock.Lock()
 			ReportSyncQueue = ReportSyncQueue[0:0]

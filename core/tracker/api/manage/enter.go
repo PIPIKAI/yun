@@ -33,6 +33,7 @@ func ManageRouter(g *gin.Engine) {
 
 	rg.GET("fileinfo", GetFileInfos)
 	rg.GET("uploading", GetUploading)
+	rg.GET("syncing", GetSyncing)
 	rg.GET("uploaded", GetUploaded)
 	rg.GET("status", GetStatus)
 	rg.DELETE("delsession", DelSession)

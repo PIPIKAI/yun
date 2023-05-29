@@ -19,6 +19,7 @@ func CheckSyncSession() {
 	}
 
 	for _, session := range sessions {
+		group, _ := leveldb.GetOne[models.Group](session.Src.Group)
 		if session.Status == "正在同步" && time.Since(time.Unix(session.UpdataAt, 0)).Minutes() >= 10 {
 			session.Status = "异常"
 			err = leveldb.UpdataOne(session)
@@ -28,7 +29,12 @@ func CheckSyncSession() {
 			}
 		}
 		if session.Status == "等待同步" && time.Now().Unix() >= session.BeginAt {
+			if group.Status != "work" || group.Storages[session.Src.GetClientKey()].Status != "work" {
+				continue
+			}
+
 			session.Status = "正在同步"
+
 			err = leveldb.UpdataOne(session)
 			if err != nil {
 				logger.Logger.Error(err)
@@ -42,9 +48,10 @@ func CheckSyncSession() {
 
 			api.Dial(session.Src.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
 				return client.Sync(context.Background(), &pb.SyncRequest{
-					Fid:    session.FID,
-					Md5S:   fileinfo.BlockMd5,
-					Target: session.GetTargets(),
+					SessionId: session.ID,
+					Fid:       session.FID,
+					Md5S:      fileinfo.BlockMd5,
+					Target:    session.GetTargets(),
 				})
 			})
 
