@@ -22,6 +22,7 @@ const (
 	Storage_Upload_FullMethodName   = "/pb.Storage/Upload"
 	Storage_Manage_FullMethodName   = "/pb.Storage/Manage"
 	Storage_Download_FullMethodName = "/pb.Storage/Download"
+	Storage_Sync_FullMethodName     = "/pb.Storage/Sync"
 )
 
 // StorageClient is the client API for Storage service.
@@ -32,6 +33,7 @@ type StorageClient interface {
 	Upload(ctx context.Context, in *UploadRequest, opts ...grpc.CallOption) (*UploadReply, error)
 	Manage(ctx context.Context, in *ManageRequest, opts ...grpc.CallOption) (*ManageReply, error)
 	Download(ctx context.Context, in *DownloadRequest, opts ...grpc.CallOption) (*DownloadReply, error)
+	Sync(ctx context.Context, in *SyncRequest, opts ...grpc.CallOption) (*SyncReply, error)
 }
 
 type storageClient struct {
@@ -69,6 +71,15 @@ func (c *storageClient) Download(ctx context.Context, in *DownloadRequest, opts 
 	return out, nil
 }
 
+func (c *storageClient) Sync(ctx context.Context, in *SyncRequest, opts ...grpc.CallOption) (*SyncReply, error) {
+	out := new(SyncReply)
+	err := c.cc.Invoke(ctx, Storage_Sync_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StorageServer is the server API for Storage service.
 // All implementations must embed UnimplementedStorageServer
 // for forward compatibility
@@ -77,6 +88,7 @@ type StorageServer interface {
 	Upload(context.Context, *UploadRequest) (*UploadReply, error)
 	Manage(context.Context, *ManageRequest) (*ManageReply, error)
 	Download(context.Context, *DownloadRequest) (*DownloadReply, error)
+	Sync(context.Context, *SyncRequest) (*SyncReply, error)
 	mustEmbedUnimplementedStorageServer()
 }
 
@@ -92,6 +104,9 @@ func (UnimplementedStorageServer) Manage(context.Context, *ManageRequest) (*Mana
 }
 func (UnimplementedStorageServer) Download(context.Context, *DownloadRequest) (*DownloadReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Download not implemented")
+}
+func (UnimplementedStorageServer) Sync(context.Context, *SyncRequest) (*SyncReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Sync not implemented")
 }
 func (UnimplementedStorageServer) mustEmbedUnimplementedStorageServer() {}
 
@@ -160,6 +175,24 @@ func _Storage_Download_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Storage_Sync_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SyncRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageServer).Sync(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Storage_Sync_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageServer).Sync(ctx, req.(*SyncRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Storage_ServiceDesc is the grpc.ServiceDesc for Storage service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -178,6 +211,10 @@ var Storage_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Download",
 			Handler:    _Storage_Download_Handler,
+		},
+		{
+			MethodName: "Sync",
+			Handler:    _Storage_Sync_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -13,6 +13,8 @@ import (
 // ReportSchedule
 var ReportSchedule = "*/5 * * * * *"
 
+var ReportSyncQueue []models.SyncReport
+
 func (s *Server) ReportStatus() {
 	data := models.Report{
 		Group:    s.Config.Group,
@@ -29,6 +31,15 @@ func (s *Server) ReportStatus() {
 		if _, err := util.PostJSON(ip+"/report-status", data, nil); err != nil {
 			logger.Logger.Warnf("Report Err :%s ", string(ip))
 		}
+		if len(ReportSyncQueue) != 0 {
+			if _, err := util.PostJSON(ip+"/report-sync", ReportSyncQueue, nil); err != nil {
+				logger.Logger.Warnf("Report Err :%s ", string(ip))
+			}
+			syncLock.Lock()
+			ReportSyncQueue = ReportSyncQueue[0:0]
+			syncLock.Unlock()
+		}
+
 	}
 
 }

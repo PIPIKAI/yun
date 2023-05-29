@@ -1,8 +1,11 @@
 package models
 
 import (
+	"crypto/md5"
+	"errors"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/pipikai/yun/common/logger"
 )
 
@@ -57,11 +60,53 @@ func (g Group) GetLongLivedStorage() (storage Storage) {
 	}
 	return
 }
-
+func (g Group) GetMinDelayStorage() *Storage {
+	var res Storage
+	nowdelay := int64(99999)
+	for _, v := range g.Storages {
+		if v.Delay < nowdelay && v.Status == "work" {
+			res = v
+		}
+	}
+	return &res
+}
 func (d Group) GetDB() string {
 	return GroupDB
 }
 
 func (d Group) GetID() string {
 	return d.Name
+}
+
+func (g Group) GetStorageByHash(c *gin.Context) (*Storage, error) {
+	storages := g.GetValidStorages()
+	if storages == nil {
+		return nil, errors.New("no avalid storage server")
+	}
+	// calculate ip hash , find the storage server
+	signByte := []byte(c.ClientIP())
+	hash := md5.New()
+	hash.Write(signByte)
+	md5Hex := hash.Sum(nil)
+	hashIndex := int(md5Hex[len(md5Hex)-1]) % len(storages)
+	vsm := storages[hashIndex]
+	return &vsm, nil
+}
+
+func (g Group) GetSyncStorages(master *Storage) []Storage {
+	res := make([]Storage, 0)
+	var tp Storage
+	nowCap := int64(0)
+	storages := g.GetValidStorages()
+	if len(storages) == 0 {
+		return nil
+	}
+	for _, v := range storages {
+		if v.GetClientKey() != master.GetClientKey() && v.Cap >= nowCap {
+			tp = v
+			nowCap = v.Cap
+		}
+	}
+	res = append(res, tp)
+	return res
 }

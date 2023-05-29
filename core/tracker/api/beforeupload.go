@@ -69,15 +69,13 @@ func BeforeUpload(c *gin.Context) {
 		return
 	}
 
-	err = leveldb.UpdataOne(models.FileHash{
-		ID:  filehashid,
-		FID: fileId + util.Md5hex(req.Filename),
-		Ok:  false,
-	})
-	if err != nil {
-		util.Response.Error(c, nil, err.Error())
+	group, err := leveldb.GetOne[models.Group](req.Group)
+	if err != nil || group.Status != "work" {
+		util.Response.Error(c, nil, "Group Not Avaliable")
 		return
 	}
+
+	selectedStorage := group.GetMinDelayStorage()
 
 	newFileinfo := &models.File{
 		ID: session.FileID,
@@ -87,7 +85,7 @@ func BeforeUpload(c *gin.Context) {
 			Md5:     req.Md5,
 			Type:    req.Type,
 		},
-		Group:      req.Group,
+		Storage:    selectedStorage,
 		Name:       req.Filename,
 		BlockSize:  req.BlockSize,
 		BlockMd5:   req.BlockMd5,
@@ -102,6 +100,16 @@ func BeforeUpload(c *gin.Context) {
 	}
 
 	err = leveldb.UpdataOne(session)
+	if err != nil {
+		util.Response.Error(c, nil, err.Error())
+		return
+	}
+
+	err = leveldb.UpdataOne(models.FileHash{
+		ID:  filehashid,
+		FID: fileId + util.Md5hex(req.Filename),
+		Ok:  false,
+	})
 	if err != nil {
 		util.Response.Error(c, nil, err.Error())
 		return

@@ -10,6 +10,7 @@ type TrackerConfig struct {
 	LevelDb  struct {
 		StoreRoot string
 	}
+	SyncStratage int
 }
 
 // NewTrackerConfig
@@ -23,5 +24,6 @@ func NewTrackerConfig() *TrackerConfig {
 		LevelDb: struct{ StoreRoot string }{
 			StoreRoot: viper.GetString("LevelDb.storeRoot"),
 		},
+		SyncStratage: viper.GetInt("SyncStratage"),
 	}
 }

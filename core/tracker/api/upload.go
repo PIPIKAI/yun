@@ -64,46 +64,24 @@ func Upload(c *gin.Context) {
 		util.Response.Error(c, nil, "File Err")
 		return
 	}
-	group, err := leveldb.GetOne[models.Group](fileinfo.Group)
+	upload_mark := make([]models.Storage, 0)
+	// Todo 上传到延迟最低的一个storage
+
+	err = util.Retry(3, func() error {
+		_, err := Dial(fileinfo.Storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
+			return client.Upload(context.Background(), &pb.UploadRequest{
+				Md5:     raw_md5,
+				RawData: file_raw,
+			})
+		})
+		return err
+	})
 	if err != nil {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
-	upload_mark := make([]models.Storage, 0)
-	var wg sync.WaitGroup
-	// 发送数据到存储服务器
-	errChan := make(chan error)
-	for key, storage := range group.Storages {
-		if storage.Status != "work" {
-			continue
-		}
-		wg.Add(1)
-		go func(storage models.Storage, key string) {
-			defer wg.Done()
-			err := util.Retry(3, func() error {
-				_, err := Dial(storage.ServerAddr, func(client pb.StorageClient) (interface{}, error) {
-					return client.Upload(context.Background(), &pb.UploadRequest{
-						Md5:     raw_md5,
-						RawData: file_raw,
-					})
-				})
-				return err
-			})
-			if err == nil {
-				lk.Lock()
-				upload_mark = append(upload_mark, storage)
-				lk.Unlock()
-			} else {
-				errChan <- err
-			}
-		}(storage, key)
-	}
-	wg.Wait()
-	// 至少上传一个成功
-	if len(upload_mark) == 0 {
-		util.Response.Error(c, nil, ":upload 101 error")
-		return
-	}
+	upload_mark = append(upload_mark, *fileinfo.Storage)
+
 	// 更新block status
 	leveldb.UpdataOne(&models.BlockStorage{
 		ID:   raw_md5,
@@ -116,5 +94,7 @@ func Upload(c *gin.Context) {
 		util.Response.Error(c, nil, err.Error())
 		return
 	}
+
 	util.Response.Success(c, gin.H{"data": upload_mark}, "success")
+
 }

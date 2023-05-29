@@ -15,8 +15,9 @@ type File struct {
 	ID       string `json:"id"`
 	PreID    string `json:"pre_id"`
 	FileMeta `json:"file_meta"`
-	Group    string `json:"group"`
-	Name     string `json:"name"`
+	Storage  *Storage  `json:"storage"`
+	Backups  []Storage `json:"backups"`
+	Name     string    `json:"name"`
 	// 0: 正在上传 1:上传完成 -1:已经删除
 	Status     int      `json:"status"`
 	Path       string   `json:"path"`

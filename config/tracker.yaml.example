@@ -1,0 +1,14 @@
+Name: Storage
+ListenOn: 0.0.0.0:8001
+Mode: dev
+ServiceType: "tracker"
+
+DBdir : LevelDbdata-tracker
+
+TempDir: ./temp
+
+# 同步策略 -1: 不同步 0: 立刻 1: 上传半小时后 2： 第二天凌晨
+SyncStratage: 0
+
+LevelDb:
+  storeRoot: ./db/LevelDbdata-tracker

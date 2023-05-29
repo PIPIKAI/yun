@@ -18,6 +18,7 @@ func HanldeStorageServerReport(c *gin.Context) {
 	err := c.ShouldBind(&req)
 	if err != nil {
 		logger.Logger.Error(err)
+		return
 	}
 	nowStorage := models.Storage{
 		Group:        req.Group,

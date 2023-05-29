@@ -1,0 +1,30 @@
+Name: Storage
+Dev: true
+
+IpAddr: 192.168.1.119
+RpcPort: :9011
+HttpPort: :9001
+
+ServiceType: "storage"
+
+# 组名
+Group : "Local-1"
+
+# Driver 的名字
+DriverName: "Local"
+# Driver 的配置
+DriverAddtion:
+  RootPath : ./storage-1
+
+# LevelDB 保存目录
+DBdir : LevelDbdata-storage1
+# 最大文件限制
+FileSizeLimit: 10240000
+
+# Tracker（应用服务器）列表
+Trackers:
+  - http://192.168.1.119:8001
+
+Log:
+  ServiceName: storage-local
+  OutPath: ./logs/storage-1.log

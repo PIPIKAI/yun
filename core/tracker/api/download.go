@@ -42,11 +42,6 @@ func Download() gin.HandlerFunc {
 		c.Writer.Header().Set("Content-Type", fileinfo.Type)
 		c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=%s", fileinfo.Name))
 		c.Writer.WriteHeader(http.StatusOK)
-		groups, err := leveldb.GetOne[models.Group](fileinfo.Group)
-		if err != nil {
-			util.Response.Error(c, nil, "DB err")
-			return
-		}
 		// content := make([]byte, 0)
 		logger.Logger.Info(fileinfo.Type, "fileinfo size :", fileinfo.Size)
 
@@ -64,7 +59,9 @@ func Download() gin.HandlerFunc {
 			// 当第一个协程完成传输，调用cancel
 			defer cancel()
 			// 使用协程对每一个在工作中的存储服务器进行下载，保证下载速度
-			for _, storage := range groups.Storages {
+
+			downloadStorages := append(fileinfo.Backups, *fileinfo.Storage)
+			for _, storage := range downloadStorages {
 				if storage.Status != "work" {
 					continue
 				}
@@ -100,7 +97,7 @@ func Download() gin.HandlerFunc {
 
 			select {
 			case <-ErrChan:
-				util.Response.Error(c, nil, err.Error())
+				// util.Response.Error(c, nil, err.Error())
 				return
 			case res := <-BytesChan:
 				// content = append(content, res...)

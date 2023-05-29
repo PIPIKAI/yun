@@ -9,11 +9,22 @@ service Storage {
   rpc Upload (UploadRequest) returns (UploadReply) {}
   rpc Manage (ManageRequest) returns (ManageReply) {}
   rpc Download (DownloadRequest) returns (DownloadReply) {}
+  rpc Sync (SyncRequest) returns (SyncReply) {}
 }
 
+message SyncRequest {
+  string sessionId = 1;
+  string fid = 2;
+  repeated string md5s = 3;
+  repeated string target = 4;
+}
+message SyncReply {
+  string msg = 1;
+}
 message DownloadRequest {
-  string md5 = 1;
-  int64 size = 2;
+  string fid = 1;
+  string md5 = 2;
+  int64 size = 3;
 }
 
 message DownloadReply {
@@ -35,7 +46,8 @@ message File {
 
 }
 message UploadRequest{
-    string md5 = 1;
+    string fid = 1;
+    string md5 = 2;
     bytes rawData = 3;
 }
 

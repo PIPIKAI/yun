@@ -19,5 +19,7 @@ func Router(g *gin.Engine) *gin.Engine {
 		rg.POST("/create", api.Create)
 	}
 	g.POST("/report-status", api.HanldeStorageServerReport)
+	g.POST("/report-sync", api.HandleSync)
+
 	return g
 }
