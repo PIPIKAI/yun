@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/pipikai/yun/core/tracker/api"
 )
@@ -10,6 +11,7 @@ import (
 //	@param g
 //	@return *gin.Engine
 func Router(g *gin.Engine) *gin.Engine {
+	pprof.Register(g)
 	g.Use(api.Download())
 	rg := g.Group("/api")
 	{

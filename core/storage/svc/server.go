@@ -3,6 +3,9 @@ package svc
 import (
 	"log"
 	"net"
+	"net/http"
+	_ "net/http/pprof"
+	"runtime"
 
 	"github.com/pipikai/yun/common/logger"
 	"github.com/pipikai/yun/core/storage/api"
@@ -36,6 +39,10 @@ import (
 //	@receiver s
 func (s *Server) RpcServer() {
 	// grpcL := m.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
+	runtime.SetBlockProfileRate(1)
+	go func() {
+		http.ListenAndServe(":10001", nil)
+	}()
 
 	lis, err := net.Listen("tcp", s.Config.RpcPort)
 	if err != nil {
