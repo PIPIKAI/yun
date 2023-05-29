@@ -41,7 +41,7 @@ func (s *Server) RpcServer() {
 	// grpcL := m.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
 	runtime.SetBlockProfileRate(1)
 	go func() {
-		http.ListenAndServe(":10001", nil)
+		http.ListenAndServe(":9012", nil)
 	}()
 
 	lis, err := net.Listen("tcp", s.Config.RpcPort)

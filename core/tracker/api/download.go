@@ -96,9 +96,8 @@ func Download() gin.HandlerFunc {
 			}
 
 			select {
-			case <-ErrChan:
+			case _ = <-ErrChan:
 				// util.Response.Error(c, nil, err.Error())
-				return
 			case res := <-BytesChan:
 				// content = append(content, res...)
 				_, err := c.Writer.Write(res)

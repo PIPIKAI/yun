@@ -97,8 +97,17 @@ var DriverCenter = map[string]vo.Driver{
 
 - 文件同步：
 
-![文件同步](./doc/文件同步.jpg)
+<img src=" ./doc/文件同步.jpg " width="50%">
 
+## 火焰图
+
+upload时应用服务器性能分析
+
+![文件同步](./doc/tracker.svg)
+
+upload时存储服务器性能分析
+
+![文件同步](./doc/storage.svg)
 ## 贡献指南
 
 我们欢迎任何形式的贡献，包括但不限于：报告问题、提交bug修复、改进文档和代码等。如果您想做出贡献，请按照以下步骤进行：
